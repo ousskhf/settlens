@@ -10,4 +10,4 @@ The synthetic MVP dataset (7 tables, Parquet format: customers, merchants, payme
 make download-data
 ```
 
-Downloads and extracts `data-v1` into `data/raw/`. Safe to re-run — skips if the data's already there. Use `make clean-data download-data` to force a fresh download.
+Downloads and extracts `data-v1.1` into `data/raw/`. Safe to re-run — skips if the data's already there. Use `make clean-data download-data` to force a fresh download.

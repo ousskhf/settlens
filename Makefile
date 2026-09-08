@@ -1,6 +1,6 @@
-DATA_RELEASE_URL := https://github.com/ousskhf/settlens/releases/download/data-v1/data-v1.tar.gz
+DATA_RELEASE_URL := https://github.com/ousskhf/settlens/releases/download/data-v1.1/data-v1.1.tar.gz
 DATA_DIR := data/raw
-DATA_ARCHIVE := $(DATA_DIR)/data-v1.tar.gz
+DATA_ARCHIVE := $(DATA_DIR)/data-v1.1.tar.gz
 
 .PHONY: download-data
 download-data:
