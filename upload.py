@@ -4,7 +4,7 @@ from google.cloud import storage
 import os
 
 
-def upload_to_lake(file_path, dataset, service_account_path=None):
+def upload_to_lake(file_path, dataset,storage_client):
     """
     Upload a local file to the raw zone of a GCS data lake.
 
@@ -14,9 +14,6 @@ def upload_to_lake(file_path, dataset, service_account_path=None):
     Args:
         file_path (str): Local path to the file.
         dataset (str): Dataset/table name, e.g. "payments".
-        service_account_path (str, optional):
-            Path to a service account JSON key.
-            If None, uses Google Application Default Credentials.
 
     Returns:
         None
@@ -46,14 +43,6 @@ def upload_to_lake(file_path, dataset, service_account_path=None):
     print(f"Local file: {file_path}")
     print(f"GCS path: {blob_path}")
 
-    # Create storage client with service account authentication
-    if service_account_path:
-        # Method 1: Pass service account key file directly to client
-        storage_client = storage.Client.from_service_account_json(service_account_path)
-    else:
-        # Method 2: Use environment variable GOOGLE_APPLICATION_CREDENTIALS
-        # or default authentication (if running on GCP)
-        storage_client = storage.Client()
 
     # Get bucket
     bucket_name = os.environ["GCS_BUCKET_NAME"]
@@ -67,8 +56,48 @@ def upload_to_lake(file_path, dataset, service_account_path=None):
     print("Upload successful!")
 
 
+
+
+def upload_all_raw_files(raw_files, service_account_path=None):
+    """
+    Upload multiple raw files to the GCS data lake.
+
+    Args:
+        raw_files (dict):
+            Dictionary mapping dataset names to local file paths.
+
+        service_account_path (str, optional):
+            Path to service account JSON key.
+    """
+
+    # Create storage client with service account authentication
+    if service_account_path:
+        # Method 1: Pass service account key file directly to client
+        storage_client = storage.Client.from_service_account_json(service_account_path)
+    else:
+        # Method 2: Use environment variable GOOGLE_APPLICATION_CREDENTIALS
+        # or default authentication (if running on GCP)
+        storage_client = storage.Client()
+
+    for dataset, file_path in raw_files.items():
+        print(f"Uploading {dataset}...")
+
+        upload_to_lake(
+            file_path=file_path,
+            dataset=dataset,
+            storage_client=storage_client
+        )
+
+
 if __name__ == "__main__":
-    upload_to_lake(
-        "data/raw/payments.parquet",
-        dataset="payments"
-    )
+
+    raw_files = {
+    "payments": "data/raw/payments.parquet",
+    "payment_attempts": "data/raw/payment_attempts.parquet",
+    "customers": "data/raw/customers.parquet",
+    "merchants": "data/raw/merchants.parquet",
+    "refunds": "data/raw/refunds.parquet",
+    "disputes": "data/raw/disputes.parquet",
+}
+
+    upload_all_raw_files(raw_files)
