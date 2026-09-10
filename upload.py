@@ -45,7 +45,13 @@ def upload_to_lake(file_path, dataset,storage_client):
 
 
     # Get bucket
-    bucket_name = os.environ["GCS_BUCKET_NAME"]
+    bucket_name = os.getenv("GCS_BUCKET_NAME")
+
+    if not bucket_name:
+        raise EnvironmentError(
+            "GCS_BUCKET_NAME is not set. "
+            "Run: export GCS_BUCKET_NAME='<your-bucket-name>'"
+       )
 
     bucket = storage_client.bucket(bucket_name)
 
@@ -92,12 +98,13 @@ def upload_all_raw_files(raw_files, service_account_path=None):
 if __name__ == "__main__":
 
     raw_files = {
-    "payments": "data/raw/payments.parquet",
-    "payment_attempts": "data/raw/payment_attempts.parquet",
-    "customers": "data/raw/customers.parquet",
-    "merchants": "data/raw/merchants.parquet",
-    "refunds": "data/raw/refunds.parquet",
-    "disputes": "data/raw/disputes.parquet",
-}
+        "customers": "data/raw/customers.parquet",
+        "merchants": "data/raw/merchants.parquet",
+        "transactions": "data/raw/transactions.parquet",
+        "payment_methods": "data/raw/payment_methods.parquet",
+        "refunds": "data/raw/refunds.parquet",
+        "disputes": "data/raw/disputes.parquet",
+        "events": "data/raw/events.parquet",
+    }
 
     upload_all_raw_files(raw_files)
