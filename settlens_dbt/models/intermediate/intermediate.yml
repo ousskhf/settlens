@@ -19,3 +19,48 @@ models:
 
       - name: refunded_amount
         description: Total refund value in major currency units.
+
+
+  - name: int_transaction_disputes
+    description: >
+      Transaction-level dispute aggregation used by downstream
+      merchant health analytics. Grain is one row per transaction_id.
+      Multiple dispute records are reduced to transaction-level
+      dispute indicators and lifecycle metrics.
+
+    columns:
+
+      - name: transaction_id
+        description: Transaction associated with the dispute records.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+
+      - name: dispute_count
+        description: Number of disputes associated with the transaction.
+        data_tests:
+          - not_null
+
+      - name: has_dispute
+        description: >
+          Binary indicator equal to 1 when the transaction has
+          at least one dispute.
+
+      - name: lost_dispute_count
+        description: >
+          Number of disputes with a final status of lost.
+
+      - name: has_lost_dispute
+        description: >
+          Binary indicator equal to 1 when at least one dispute
+          associated with the transaction was lost.
+
+      - name: first_dispute_at
+        description: Earliest dispute creation timestamp for the transaction.
+
+      - name: latest_dispute_at
+        description: Most recent dispute creation timestamp for the transaction.

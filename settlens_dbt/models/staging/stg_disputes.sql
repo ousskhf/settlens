@@ -1,31 +1,32 @@
 with source as (
 
     select *
-    from {{ source('raw', 'refunds') }}
+    from {{ source('raw', 'disputes') }}
 
 ),
 
 renamed as (
 
     select
-        refund_id,
+        dispute_id,
         transaction_id,
 
         timestamp_micros(
-            div(refund_created_at, 1000)
-        ) as refund_created_at,
+            div(dispute_created_at, 1000)
+        ) as dispute_created_at,
 
-        date(
-            timestamp_micros(
-                div(refund_created_at, 1000)
-            )
-        ) as refund_date,
-
-        amount_minor / 100.0 as refund_amount,
-
+        amount_minor,
         currency,
-        refund_reason,
-        refund_status,
+        dispute_reason,
+        dispute_status,
+
+        timestamp_micros(
+            div(evidence_due_at, 1000)
+        ) as evidence_due_at,
+
+        timestamp_micros(
+            div(closed_at, 1000)
+        ) as closed_at,
 
         timestamp_micros(
             div(record_created_at, 1000)

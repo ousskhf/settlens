@@ -1,31 +1,33 @@
 with source as (
 
     select *
-    from {{ source('raw', 'refunds') }}
+    from {{ source('raw', 'merchants') }}
 
 ),
 
 renamed as (
 
     select
-        refund_id,
-        transaction_id,
+        merchant_id,
+        merchant_name_token,
 
-        timestamp_micros(
-            div(refund_created_at, 1000)
-        ) as refund_created_at,
+        mcc,
+        merchant_category,
+        merchant_country,
+
+        merchant_tier,
+        risk_category,
+
+        settlement_currency,
+        processing_fee_pct,
+
+        account_status,
 
         date(
             timestamp_micros(
-                div(refund_created_at, 1000)
+                div(onboarding_date, 1000)
             )
-        ) as refund_date,
-
-        amount_minor / 100.0 as refund_amount,
-
-        currency,
-        refund_reason,
-        refund_status,
+        ) as onboarding_date,
 
         timestamp_micros(
             div(record_created_at, 1000)

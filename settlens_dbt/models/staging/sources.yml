@@ -19,3 +19,15 @@ sources:
       - name: refunds
         description: >
           Raw refund records linked to payment transactions.
+
+      - name: merchants
+        description: >
+          Raw merchant master data containing merchant attributes
+          such as category, country, tier, risk category, settlement
+          currency, and account status.
+
+      - name: disputes
+        description: >
+          Raw payment dispute records linked to transactions.
+          Each row represents a dispute raised against a payment
+          transaction.
