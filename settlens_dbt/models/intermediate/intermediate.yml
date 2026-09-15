@@ -1,0 +1,21 @@
+version: 2
+
+models:
+
+  - name: int_transaction_refunds
+
+    description: >
+      Refund records aggregated to one row per transaction.
+
+    columns:
+
+      - name: transaction_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: refund_count
+        description: Number of refund records associated with the transaction.
+
+      - name: refunded_amount
+        description: Total refund value in major currency units.

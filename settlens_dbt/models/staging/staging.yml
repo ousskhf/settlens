@@ -1,0 +1,76 @@
+version: 2
+
+models:
+
+  - name: stg_transactions
+
+    description: >
+      Cleaned transaction-level payment data.
+      Grain is one row per transaction_id.
+      Raw nanosecond timestamps are normalized to BigQuery TIMESTAMP
+      values and amount_minor is converted to major currency units.
+
+    columns:
+
+      - name: transaction_id
+        description: Unique identifier of the payment transaction.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: transaction_created_at
+        description: >
+          Transaction creation timestamp converted from the raw
+          Unix nanosecond representation.
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Calendar date derived from transaction_created_at.
+        data_tests:
+          - not_null
+
+      - name: amount
+        description: >
+          Transaction amount in major currency units,
+          converted from raw amount_minor.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: ISO currency code associated with the transaction.
+        data_tests:
+          - not_null
+
+      - name: status
+        description: Payment lifecycle status.
+        data_tests:
+          - not_null
+
+          - accepted_values:
+              arguments:
+                values:
+                  - succeeded
+                  - requires_payment_method
+                  - canceled
+                  - requires_action
+                  - processing
+
+      - name: is_cross_border
+        description: >
+          Indicates whether the issuer country differs from the
+          merchant country.
+
+      - name: risk_score
+        description: Risk score associated with the transaction.
+
+      - name: processing_time_ms
+        description: Transaction processing duration in milliseconds.
+
+      - name: record_created_at
+        description: >
+          Record creation timestamp converted from raw nanoseconds.
+
+      - name: record_last_updated
+        description: >
+          Record last-update timestamp converted from raw nanoseconds.

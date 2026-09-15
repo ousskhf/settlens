@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: raw
+    database: le-wagon-data-2249-2
+    schema: settlens_raw
+
+    description: >
+      Raw Settlens datasets ingested from Parquet files in GCS
+      and exposed through BigQuery external tables.
+
+    tables:
+
+      - name: transactions
+        description: >
+          Raw payment transaction records. Each row represents
+          one payment transaction.
+
+      - name: refunds
+        description: >
+          Raw refund records linked to payment transactions.
