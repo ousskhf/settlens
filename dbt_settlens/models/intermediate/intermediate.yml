@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: int_transactions_failure
+
+    description: >
+      Failed payment attempts (status = requires_payment_method), one
+      row per transaction_id, enriched with the failure's
+      recoverability classification from failure_reason_mapping.
+
+    columns:
+      - name: transaction_id
+        description: Unique identifier of the failed payment transaction.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: failure_code
+        description: Raw failure reason code.
+        data_tests:
+          - not_null
+
+      - name: failure_category
+        description: soft_decline or hard_decline, from failure_reason_mapping.
+        data_tests:
+          - not_null
+
+      - name: failure_recoverability
+        description: high, medium, or low - how recoverable this failure class is.
+        data_tests:
+          - not_null
+
+      - name: amount
+        description: Transaction amount in major currency units.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: ISO currency code.
+        data_tests:
+          - not_null
