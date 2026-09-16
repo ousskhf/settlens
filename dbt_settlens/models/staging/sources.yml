@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: settlens_raw
-    database: lewagon-de-bootcamp-491611
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
     schema: raw_settlens
     tables:
       - name: customers
