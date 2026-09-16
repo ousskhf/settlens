@@ -31,9 +31,9 @@ SELECT
     CASE WHEN status = 'succeeded' THEN 1 ELSE 0 END as is_successful,
     CASE WHEN status <> 'succeeded' THEN 1 ELSE 0 END as is_failed,
     CASE
-        WHEN risk_score < 20 THEN 'low'
-        WHEN risk_score < 50 THEN 'medium'
-        WHEN risk_score < 80 THEN 'high'
+        WHEN risk_score < 0.2 THEN 'low'
+        WHEN risk_score < 0.5 THEN 'medium'
+        WHEN risk_score < 0.8 THEN 'high'
         else 'very_high'
     END as risk_bucket
 
