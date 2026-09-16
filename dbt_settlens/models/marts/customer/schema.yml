@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: mart_customer_payment_health
+
+    description: >
+      Customer-level payment health, one row per customer_id +
+      transaction_date on which the customer had a resolved payment
+      attempt. Trailing 30-day rolling metrics (computed with a
+      RANGE BETWEEN INTERVAL 29 DAY PRECEDING window per customer)
+      power the "Repeat Payment Failure Rate" and "Customers With No
+      Recent Successful Payment" KPIs from the ideation backlog -
+      consumers compute the population-level rate/count by
+      aggregating is_repeat_failure_customer / no_recent_success_flag
+      across this mart's rows for a given date.
+
+    columns:
+      - name: customer_id
+        description: Customer this row summarizes.
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Calendar date of the customer's activity.
+        data_tests:
+          - not_null
+
+      - name: failure_count
+        description: Failed (requires_payment_method) payments on this date.
+
+      - name: successful_payment_count
+        description: Successful payments on this date.
+
+      - name: rolling_30d_attempt_count
+        description: Resolved payment attempts for this customer in the trailing 30 days (this date inclusive).
+
+      - name: rolling_30d_success_count
+        description: Successful payments for this customer in the trailing 30 days.
+
+      - name: rolling_30d_failure_count
+        description: Failed payments for this customer in the trailing 30 days.
+
+      - name: is_repeat_failure_customer
+        description: True when rolling_30d_failure_count >= 2 - the customer has repeated payment friction, not an isolated failure.
+
+      - name: no_recent_success_flag
+        description: True when the customer had attempts but zero successes in the trailing 30 days - a watchlist/at-risk signal.

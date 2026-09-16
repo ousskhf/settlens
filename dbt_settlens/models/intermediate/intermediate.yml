@@ -39,3 +39,38 @@ models:
         description: ISO currency code.
         data_tests:
           - not_null
+
+  - name: int_transactions_customer_daily
+
+    description: >
+      One row per customer per transaction_date on which they had at
+      least one resolved payment attempt (succeeded or
+      requires_payment_method - canceled/requires_action/processing
+      are excluded as not-yet-resolved). Daily counts feed the
+      rolling-30-day window logic in mart_customer_payment_health.
+
+    columns:
+      - name: customer_id
+        description: Customer who transacted.
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Calendar date of the customer's activity.
+        data_tests:
+          - not_null
+
+      - name: daily_attempt_count
+        description: Resolved payment attempts (succeeded + requires_payment_method) that day.
+        data_tests:
+          - not_null
+
+      - name: daily_success_count
+        description: Successful payments that day.
+        data_tests:
+          - not_null
+
+      - name: daily_failure_count
+        description: Failed (requires_payment_method) payments that day.
+        data_tests:
+          - not_null
