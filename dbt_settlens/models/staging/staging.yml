@@ -1,28 +1,52 @@
 version: 2
 
 models:
+
+  # ============================================================
+  # TRANSACTIONS
+  # ============================================================
+
   - name: stg_transactions
 
     description: >
-      Cleaned transaction-level payment data. Grain is one row per
-      transaction_id. Raw nanosecond timestamps are normalized to
-      BigQuery TIMESTAMP values and amount_minor is exposed alongside
-      a converted major-currency-unit `amount`.
+      Cleaned transaction-level payment data.
+      Grain is one row per transaction_id.
+      Raw nanosecond timestamps are normalized to BigQuery TIMESTAMP
+      values and amount_minor is exposed alongside a converted
+      major-currency-unit `amount`. This model is the primary
+      transaction source for downstream payment monetization and
+      merchant health marts.
 
     columns:
+
       - name: transaction_id
         description: Unique identifier of the payment transaction.
         data_tests:
           - unique
           - not_null
 
+      - name: customer_id
+        description: Identifier of the customer associated with the transaction.
+
+      - name: merchant_id
+        description: Identifier of the merchant processing the transaction.
+        data_tests:
+          - not_null
+
+      - name: payment_method_id
+        description: Identifier of the payment method used for the transaction.
+
       - name: transaction_created_at
-        description: Transaction creation timestamp, normalized from raw nanoseconds.
+        description: >
+          Transaction creation timestamp converted from the raw
+          Unix nanosecond representation to BigQuery TIMESTAMP.
         data_tests:
           - not_null
 
       - name: transaction_date
-        description: Calendar date derived from transaction_created_at.
+        description: >
+          Calendar date derived from transaction_created_at and used
+          for daily analytical aggregations.
         data_tests:
           - not_null
 
@@ -35,7 +59,10 @@ models:
           - not_null
 
       - name: currency
-        description: ISO currency code associated with the transaction.
+        description: >
+          ISO currency code associated with the transaction.
+          Monetary metrics should not be aggregated across currencies
+          without an explicit currency-conversion step.
         data_tests:
           - not_null
 
@@ -68,10 +95,299 @@ models:
         description: Card funding type, credit, debit, or prepaid. Null for non-card payment methods.
 
       - name: is_cross_border
-        description: Indicates whether the issuer country differs from the merchant country.
+        description: >
+          Indicates whether the issuer country differs from the
+          merchant country.
 
       - name: risk_score
-        description: Risk score associated with the transaction.
+        description: >
+          Risk score associated with the transaction.
 
       - name: processing_time_ms
-        description: Transaction processing duration in milliseconds.
+        description: >
+          Transaction processing duration in milliseconds.
+
+      - name: record_created_at
+        description: >
+          Record creation timestamp converted from the raw
+          nanosecond representation to BigQuery TIMESTAMP.
+
+      - name: record_last_updated
+        description: >
+          Record last-update timestamp converted from the raw
+          nanosecond representation to BigQuery TIMESTAMP.
+
+      - name: data_version
+        description: >
+          Version identifier associated with the generated source record.
+
+      - name: source_system
+        description: >
+          Source system responsible for producing the record.
+
+
+  # ============================================================
+  # REFUNDS
+  # ============================================================
+
+  - name: stg_refunds
+
+    description: >
+      Cleaned refund-level payment data.
+      Grain is one row per refund_id.
+      Raw timestamp fields are normalized to BigQuery TIMESTAMP values
+      and refund amounts are expressed in major currency units.
+      The model is used by payment monetization and merchant health
+      analytics to identify refunded transactions and refund value.
+
+    columns:
+
+      - name: refund_id
+        description: Unique identifier of the refund.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: transaction_id
+        description: >
+          Identifier of the original payment transaction associated
+          with the refund.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+
+      - name: refund_created_at
+        description: >
+          Timestamp when the refund was created, normalized from the
+          raw INT64 timestamp representation to BigQuery TIMESTAMP.
+        data_tests:
+          - not_null
+
+      - name: refund_date
+        description: >
+          Calendar date derived from refund_created_at.
+
+      - name: refund_amount
+        description: >
+          Refund amount in major currency units converted from
+          raw amount_minor.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: >
+          ISO currency code of the refunded amount.
+        data_tests:
+          - not_null
+
+      - name: refund_reason
+        description: >
+          Business or operational reason associated with the refund.
+
+      - name: refund_status
+        description: >
+          Current lifecycle status of the refund.
+        data_tests:
+          - not_null
+
+      - name: record_created_at
+        description: >
+          Record creation timestamp normalized to BigQuery TIMESTAMP.
+
+      - name: record_last_updated
+        description: >
+          Record last-update timestamp normalized to BigQuery TIMESTAMP.
+
+      - name: data_version
+        description: >
+          Version identifier associated with the generated source record.
+
+      - name: source_system
+        description: >
+          Source system responsible for producing the refund record.
+
+
+  # ============================================================
+  # MERCHANTS
+  # ============================================================
+
+  - name: stg_merchants
+
+    description: >
+      Standardized merchant master data used to enrich downstream
+      payment and merchant-level analytical models.
+      Grain is one row per merchant_id.
+      Raw date and timestamp fields are normalized to analytical
+      BigQuery types while merchant business attributes are preserved.
+
+    columns:
+
+      - name: merchant_id
+        description: Unique identifier of the merchant.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: merchant_name_token
+        description: >
+          Synthetic merchant name or token used to identify the merchant
+          without exposing real merchant information.
+
+      - name: mcc
+        description: >
+          Merchant Category Code identifying the merchant's business activity.
+
+      - name: merchant_category
+        description: >
+          Human-readable business category assigned to the merchant.
+
+      - name: merchant_country
+        description: >
+          Country associated with the merchant.
+
+      - name: merchant_tier
+        description: >
+          Commercial or operational tier assigned to the merchant.
+          Used for peer-level merchant performance analysis.
+
+      - name: risk_category
+        description: >
+          Risk segment assigned to the merchant and used for
+          merchant-risk and dispute analysis.
+
+      - name: settlement_currency
+        description: >
+          Default currency in which the merchant settles payment proceeds.
+
+      - name: processing_fee_pct
+        description: >
+          Processing fee percentage associated with the merchant.
+
+      - name: account_status
+        description: >
+          Current operational status of the merchant account.
+        data_tests:
+          - not_null
+
+      - name: onboarding_date
+        description: >
+          Date on which the merchant was onboarded to the platform.
+
+      - name: record_created_at
+        description: >
+          Record creation timestamp normalized from the raw INT64
+          representation to BigQuery TIMESTAMP.
+
+      - name: record_last_updated
+        description: >
+          Record last-update timestamp normalized from the raw INT64
+          representation to BigQuery TIMESTAMP.
+
+      - name: data_version
+        description: >
+          Version identifier associated with the generated source record.
+
+      - name: source_system
+        description: >
+          Source system responsible for producing the merchant record.
+
+
+  # ============================================================
+  # DISPUTES
+  # ============================================================
+
+  - name: stg_disputes
+
+    description: >
+      Cleaned payment dispute data.
+      Grain is one row per dispute_id.
+      Raw INT64 timestamp fields are normalized to BigQuery TIMESTAMP
+      values. The model is used by merchant health analytics to identify
+      transactions that entered the dispute process and their final
+      dispute outcomes.
+
+    columns:
+
+      - name: dispute_id
+        description: Unique identifier of the payment dispute.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: transaction_id
+        description: >
+          Identifier of the original payment transaction associated
+          with the dispute.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+
+      - name: dispute_created_at
+        description: >
+          Timestamp when the dispute was created, converted from the
+          raw INT64 nanosecond representation to BigQuery TIMESTAMP.
+        data_tests:
+          - not_null
+
+      - name: amount_minor
+        description: >
+          Disputed amount expressed in the smallest currency unit.
+          Retained in staging unless amount normalization is explicitly
+          performed in the staging SQL.
+
+      - name: currency
+        description: >
+          ISO currency code associated with the disputed transaction.
+        data_tests:
+          - not_null
+
+      - name: dispute_reason
+        description: >
+          Reason associated with the payment dispute.
+
+      - name: dispute_status
+        description: >
+          Current lifecycle status of the dispute.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - needs_response
+                  - under_review
+                  - won
+                  - lost
+
+      - name: evidence_due_at
+        description: >
+          Deadline for providing evidence for the dispute,
+          normalized to BigQuery TIMESTAMP.
+
+      - name: closed_at
+        description: >
+          Timestamp when the dispute was closed.
+          Null while the dispute remains open.
+
+      - name: record_created_at
+        description: >
+          Record creation timestamp normalized from the raw INT64
+          representation to BigQuery TIMESTAMP.
+
+      - name: record_last_updated
+        description: >
+          Record last-update timestamp normalized from the raw INT64
+          representation to BigQuery TIMESTAMP.
+
+      - name: data_version
+        description: >
+          Version identifier associated with the generated source record.
+
+      - name: source_system
+        description: >
+          Source system responsible for producing the dispute record.
