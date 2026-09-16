@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: raw
-    database: le-wagon-data-2249-2
-    schema: settlens_raw
+  - name: settlens_raw
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: raw_settlens
 
     description: >
       Raw Settlens datasets ingested from Parquet files in GCS
