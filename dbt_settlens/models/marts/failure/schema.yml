@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: mart_payment_failure_opportunity
+
+    description: >
+      Daily failed-payment revenue opportunity, sliced by merchant
+      country, payment method, card brand/funding, currency, and
+      failure reason. Grain is one row per transaction_date +
+      merchant_country + payment_method_type + card_brand +
+      card_funding + currency + failure_code. Quantifies how much
+      failed payment value is a realistic recovery opportunity
+      (failure_recoverability high/medium) vs. a hard decline (low),
+      per the KPI backlog's "Potentially Recoverable Failed Value" and
+      "Recoverable Failure %" definitions. failed_value_share_of_day
+      and cumulative_failed_value_share_of_day give a Pareto view of
+      which reason/dimension combinations dominate a given day's
+      failed value ("Failed Value Concentration by Reason").
+
+    columns:
+      - name: transaction_date
+        description: Calendar date of the failed payment attempts.
+        data_tests:
+          - not_null
+
+      - name: merchant_country
+        description: Merchant's country, snapshotted at transaction time.
+        data_tests:
+          - not_null
+
+      - name: payment_method_type
+        description: card, wallet, or bank_transfer.
+        data_tests:
+          - not_null
+
+      - name: card_brand
+        description: Card network brand. Null for non-card payment methods.
+
+      - name: card_funding
+        description: credit, debit, or prepaid. Null for non-card payment methods.
+
+      - name: currency
+        description: ISO currency code.
+        data_tests:
+          - not_null
+
+      - name: failure_code
+        description: Raw failure reason code.
+        data_tests:
+          - not_null
+
+      - name: failure_category
+        description: soft_decline or hard_decline.
+        data_tests:
+          - not_null
+
+      - name: failure_recoverability
+        description: high, medium, or low - recoverability of this failure class.
+        data_tests:
+          - not_null
+
+      - name: failed_transaction_count
+        description: Number of failed transactions in this slice.
+
+      - name: failed_payment_value
+        description: Total attempted value of failed transactions, major currency units.
+
+      - name: recoverable_transaction_count
+        description: Failed transactions whose failure_recoverability is high or medium.
+
+      - name: recoverable_payment_value
+        description: Failed payment value considered potentially recoverable (high/medium).
+
+      - name: recoverable_failure_pct
+        description: recoverable_payment_value as a percentage of failed_payment_value.
+
+      - name: failed_value_share_of_day
+        description: This row's share of total failed payment value on its transaction_date.
+
+      - name: cumulative_failed_value_share_of_day
+        description: >
+          Running cumulative share of the day's failed payment value,
+          ranked by failed_payment_value descending - a Pareto view of
+          which reason/dimension combinations to address first.

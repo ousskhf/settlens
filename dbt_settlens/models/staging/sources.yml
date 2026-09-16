@@ -1,0 +1,79 @@
+version: 2
+
+sources:
+  - name: settlens_raw
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: raw_settlens
+
+    description: >
+      Raw Settlens datasets loaded from the data-v1.1 synthetic dataset
+      release into BigQuery.
+
+    tables:
+      - name: transactions
+        description: >
+          Raw payment transaction records. Each row represents one
+          payment attempt.
+        columns:
+          - name: transaction_id
+            description: "Primary key. Unique identifier for the transaction."
+            data_tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: "Foreign key to customers - the customer who made the payment."
+          - name: merchant_id
+            description: "Foreign key to merchants - the merchant receiving the payment."
+          - name: payment_method_id
+            description: "Foreign key to payment_methods - the payment method used."
+          - name: transaction_created_at
+            description: "Epoch timestamp of transaction creation, stored as INTEGER (nanoseconds)."
+          - name: amount_minor
+            description: "Transaction amount in the currency's minor unit (e.g. cents for USD)."
+          - name: currency
+            description: "ISO currency code for the transaction amount."
+          - name: payment_method_type
+            description: "Type of payment method used: card, wallet, or bank_transfer."
+          - name: card_brand
+            description: "Card network brand (e.g. visa, mastercard). Null for non-card payment methods."
+          - name: card_funding
+            description: "Card funding type: credit, debit, or prepaid. Null for non-card payment methods."
+          - name: cardholder_present
+            description: "Whether the cardholder was physically present at the point of sale."
+          - name: authorization_method
+            description: "How the payment was authorized: chip, contactless, swipe, online, or keyed_in."
+          - name: mcc
+            description: "Merchant category code, snapshotted at transaction time."
+          - name: merchant_country
+            description: "Merchant's country, snapshotted at transaction time."
+          - name: issuer_country
+            description: "Country of the bank that issued the card/payment method."
+          - name: is_cross_border
+            description: "True when issuer_country differs from merchant_country."
+          - name: capture_method
+            description: "Whether funds were captured automatically or require a manual capture step."
+          - name: status
+            description: "Transaction status: succeeded, requires_payment_method, canceled, requires_action, or processing."
+          - name: failure_code
+            description: "Reason code when the transaction did not succeed. Null for successful transactions."
+          - name: risk_score
+            description: "Composite risk score, range 0-1, derived from cross-border/MCC/funding signals."
+          - name: processing_time_ms
+            description: "Time taken to process the transaction, in milliseconds."
+          - name: record_created_at
+            description: "Epoch timestamp of record creation (source system audit column)."
+          - name: record_last_updated
+            description: "Epoch timestamp of last record update (source system audit column)."
+          - name: data_version
+            description: "Schema/data version of the record."
+          - name: source_system
+            description: "Name of the originating system that produced this record."
+
+      # Not yet loaded/used by this mart - documented for whoever builds
+      # the marts that need them.
+      - name: customers
+      - name: merchants
+      - name: payment_methods
+      - name: refunds
+      - name: disputes
+      - name: events

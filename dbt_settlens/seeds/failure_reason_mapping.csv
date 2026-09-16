@@ -1,0 +1,8 @@
+failure_code,failure_category,failure_recoverability,recovery_action,notes
+incorrect_cvc,soft_decline,high,prompt_retry,Simple input error; correcting CVC usually succeeds immediately
+authentication_required,soft_decline,high,prompt_authentication,3DS/SCA step not completed; prompting the customer typically recovers the payment
+processing_error,soft_decline,high,retry_automatically,Transient technical failure; automatic retry usually succeeds
+insufficient_funds,soft_decline,medium,retry_later,Funds may become available; a delayed smart retry can recover the payment
+expired_card,hard_decline,medium,prompt_card_update,"Requires the customer to provide updated card details, but conversion is achievable once done"
+card_declined,hard_decline,low,do_not_retry,Generic issuer decline; retrying without changing the payment method rarely succeeds
+do_not_honor,hard_decline,low,do_not_retry,Issuer-level block with no visibility into cause; low recoverability

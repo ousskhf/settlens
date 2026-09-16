@@ -1,0 +1,45 @@
+version: 2
+
+seeds:
+  - name: failure_reason_mapping
+
+    description: >
+      Maps each transaction failure_code to a recoverability
+      classification, used to estimate how much failed payment value
+      is a realistic recovery opportunity vs. a hard decline.
+
+    columns:
+      - name: failure_code
+        description: Raw failure reason code as it appears on transactions.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: failure_category
+        description: High-level grouping, soft_decline (transient/actionable) or hard_decline.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - soft_decline
+                  - hard_decline
+
+      - name: failure_recoverability
+        description: How likely the failed payment is to be recovered if actioned.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - high
+                  - medium
+                  - low
+
+      - name: recovery_action
+        description: Suggested action to recover this class of failure.
+        data_tests:
+          - not_null
+
+      - name: notes
+        description: Rationale for the classification.
