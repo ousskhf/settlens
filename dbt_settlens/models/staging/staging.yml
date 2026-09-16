@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: stg_transactions
+
+    description: >
+      Cleaned transaction-level payment data. Grain is one row per
+      transaction_id. Raw nanosecond timestamps are normalized to
+      BigQuery TIMESTAMP values and amount_minor is exposed alongside
+      a converted major-currency-unit `amount`.
+
+    columns:
+      - name: transaction_id
+        description: Unique identifier of the payment transaction.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: transaction_created_at
+        description: Transaction creation timestamp, normalized from raw nanoseconds.
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Calendar date derived from transaction_created_at.
+        data_tests:
+          - not_null
+
+      - name: amount_minor
+        description: Transaction amount in the currency's minor unit, as received.
+
+      - name: amount
+        description: Transaction amount in major currency units (amount_minor / 100).
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: ISO currency code associated with the transaction.
+        data_tests:
+          - not_null
+
+      - name: status
+        description: Payment lifecycle status.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - succeeded
+                  - requires_payment_method
+                  - canceled
+                  - requires_action
+                  - processing
+
+      - name: failure_code
+        description: Reason code when the transaction did not succeed. Null for successful transactions.
+
+      - name: merchant_country
+        description: Merchant's country, snapshotted at transaction time.
+
+      - name: payment_method_type
+        description: Type of payment method used, card, wallet, or bank_transfer.
+
+      - name: card_brand
+        description: Card network brand. Null for non-card payment methods.
+
+      - name: card_funding
+        description: Card funding type, credit, debit, or prepaid. Null for non-card payment methods.
+
+      - name: is_cross_border
+        description: Indicates whether the issuer country differs from the merchant country.
+
+      - name: risk_score
+        description: Risk score associated with the transaction.
+
+      - name: processing_time_ms
+        description: Transaction processing duration in milliseconds.

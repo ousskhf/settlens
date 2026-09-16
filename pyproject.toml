@@ -3,14 +3,14 @@ name = "settlens"
 version = "0.1.0"
 description = "Dependencies for settlens data engineering project"
 authors = [
-    {name = "christos patsalis", email = "christos.patsalis12@gmail.com"}
+    {name = "oussama khoufi", email = "ouss.khf@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "google-cloud-storage (>=2.18.0,<3.0.0)",
     "dbt-bigquery (>=1.9.0,<2.0.0)",
-    "pandas (>=3.0.5,<4.0.0)"
+    "pandas (>=2.2.3,<3.0.0)"
 ]
 
 
