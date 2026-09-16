@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: settlens_raw
     database: "{{ env_var('GCP_PROJECT_ID') }}"
-    schema: raw_settlens
+    schema: "{{ env_var('BQ_DATASET', 'raw_settlens') or 'raw_settlens' }}"
 
     description: >
       Raw Settlens datasets loaded from the data-v1.1 synthetic dataset

@@ -8,4 +8,6 @@ data/
 dbt_settlens/target/
 dbt_settlens/dbt_packages/
 dbt_settlens/logs/
+dbt_settlens/.user.yml
 .env
+keys/
