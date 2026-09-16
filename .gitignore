@@ -8,3 +8,4 @@ data/
 dbt_settlens/target/
 dbt_settlens/dbt_packages/
 dbt_settlens/logs/
+.env
