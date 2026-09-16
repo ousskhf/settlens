@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: mart_authorization
+    description: >
+      Aggregated authorization performance mart for card transactions.
+      One row per transaction date, merchant country, payment method type,
+      card brand and currency.
+
+    columns:
+
+      - name: transaction_date
+        description: "Date on which the transactions occurred."
+        data_tests:
+          - not_null
+
+      - name: merchant_country
+        description: "Country of the merchant."
+        data_tests:
+          - not_null
+
+      - name: payment_method_type
+        description: "Payment method type. This mart contains card transactions only."
+        data_tests:
+          - not_null
+
+      - name: card_brand
+        description: "Card brand associated with the transactions."
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: "Currency in which the transactions were processed."
+        data_tests:
+          - not_null
+
+      - name: eligible_transactions
+        description: "Number of eligible card transactions in the aggregation."
+
+      - name: successful_transactions
+        description: "Number of successful card transactions."
+
+      - name: failed_transactions
+        description: "Number of failed card transactions."
+
+      - name: authorization_rate
+        description: >
+          Percentage of eligible card transactions that were successful.
+
+      - name: total_payment_volume
+        description: >
+          Total transaction amount in the original transaction currencies.
+          Values are not converted to a common reporting currency.
+
+      - name: successful_payment_volume
+        description: >
+          Total amount of successful card transactions in the original
+          transaction currencies. Values are not converted to a common
+          reporting currency.

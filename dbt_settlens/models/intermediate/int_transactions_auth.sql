@@ -6,8 +6,9 @@ SELECT
     customer_id,
     merchant_id,
     payment_method_id,
+    transaction_created_at,
     date(transaction_created_at) as transaction_date,
-    amount_minor,
+    amount,
     currency,
 
     payment_method_type,
@@ -30,6 +31,8 @@ SELECT
     -- Derived fields
     CASE WHEN status = 'succeeded' THEN 1 ELSE 0 END as is_successful,
     CASE WHEN status <> 'succeeded' THEN 1 ELSE 0 END as is_failed,
+    -- Risk bands defined for analytical reporting:
+-- <20 low, 20-49 medium, 50-79 high, 80+ very high
     CASE
         WHEN risk_score < 20 THEN 'low'
         WHEN risk_score < 50 THEN 'medium'
