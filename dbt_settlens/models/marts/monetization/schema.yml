@@ -46,4 +46,3 @@ models:
 
       - name: refund_volume
         description: Total refunded value in major currency units.
-

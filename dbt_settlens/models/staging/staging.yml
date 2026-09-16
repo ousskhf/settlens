@@ -12,9 +12,10 @@ models:
       Cleaned transaction-level payment data.
       Grain is one row per transaction_id.
       Raw nanosecond timestamps are normalized to BigQuery TIMESTAMP
-      values and amount_minor is converted to major currency units.
-      This model is the primary transaction source for downstream
-      payment monetization and merchant health marts.
+      values and amount_minor is exposed alongside a converted
+      major-currency-unit `amount`. This model is the primary
+      transaction source for downstream payment monetization and
+      merchant health marts.
 
     columns:
 
@@ -49,10 +50,11 @@ models:
         data_tests:
           - not_null
 
+      - name: amount_minor
+        description: Transaction amount in the currency's minor unit, as received.
+
       - name: amount
-        description: >
-          Transaction amount in major currency units,
-          converted from raw amount_minor.
+        description: Transaction amount in major currency units (amount_minor / 100).
         data_tests:
           - not_null
 
@@ -76,6 +78,21 @@ models:
                   - canceled
                   - requires_action
                   - processing
+
+      - name: failure_code
+        description: Reason code when the transaction did not succeed. Null for successful transactions.
+
+      - name: merchant_country
+        description: Merchant's country, snapshotted at transaction time.
+
+      - name: payment_method_type
+        description: Type of payment method used, card, wallet, or bank_transfer.
+
+      - name: card_brand
+        description: Card network brand. Null for non-card payment methods.
+
+      - name: card_funding
+        description: Card funding type, credit, debit, or prepaid. Null for non-card payment methods.
 
       - name: is_cross_border
         description: >

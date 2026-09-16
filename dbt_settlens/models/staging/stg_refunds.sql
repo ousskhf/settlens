@@ -5,11 +5,15 @@ with source as (
 
 ),
 
-renamed as (
+cleaned as (
 
     select
-        refund_id,
-        transaction_id,
+
+        cast(refund_id as string)
+            as refund_id,
+
+        cast(transaction_id as string)
+            as transaction_id,
 
         timestamp_micros(
             div(refund_created_at, 1000)
@@ -21,7 +25,10 @@ renamed as (
             )
         ) as refund_date,
 
-        amount_minor / 100.0 as refund_amount,
+        safe_divide(
+            cast(amount_minor as numeric),
+            100
+        ) as refund_amount,
 
         currency,
         refund_reason,
@@ -43,4 +50,4 @@ renamed as (
 )
 
 select *
-from renamed
+from cleaned
