@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: mart_payment_monetization_daily
+    description: >
+      Daily payment monetization and payment-state reporting mart.
+      Grain is one row per metric_date and currency.
+
+    columns:
+      - name: metric_date
+        description: Calendar date of payment activity.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: Currency associated with monetary metrics.
+        data_tests:
+          - not_null
+
+      - name: total_transactions
+        description: Total number of transactions.
+
+      - name: successful_transactions
+        description: Transactions with succeeded status.
+
+      - name: requires_payment_method_transactions
+        description: Transactions requiring a valid payment method.
+
+      - name: requires_action_transactions
+        description: Transactions requiring further customer action.
+
+      - name: canceled_transactions
+        description: Canceled transactions.
+
+      - name: processing_transactions
+        description: Transactions still processing.
+
+      - name: transaction_success_rate
+        description: Successful transactions divided by total transactions.
+
+      - name: transaction_volume
+        description: Total transaction value in major currency units.
+
+      - name: successful_payment_volume
+        description: Value associated with succeeded transactions.
+
+      - name: refund_volume
+        description: Total refunded value in major currency units.

@@ -1,0 +1,138 @@
+version: 2
+
+models:
+  - name: int_transaction_refunds
+
+    description: >
+      Refund records aggregated to one row per transaction.
+
+    columns:
+
+      - name: transaction_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: refund_count
+        description: Number of refund records associated with the transaction.
+
+      - name: refunded_amount
+        description: Total refund value in major currency units.
+
+  - name: int_transaction_disputes
+    description: >
+      Transaction-level dispute aggregation used by downstream
+      merchant health analytics. Grain is one row per transaction_id.
+      Multiple dispute records are reduced to transaction-level
+      dispute indicators and lifecycle metrics.
+
+    columns:
+
+      - name: transaction_id
+        description: Transaction associated with the dispute records.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+
+      - name: dispute_count
+        description: Number of disputes associated with the transaction.
+        data_tests:
+          - not_null
+
+      - name: has_dispute
+        description: >
+          Binary indicator equal to 1 when the transaction has
+          at least one dispute.
+
+      - name: lost_dispute_count
+        description: >
+          Number of disputes with a final status of lost.
+
+      - name: has_lost_dispute
+        description: >
+          Binary indicator equal to 1 when at least one dispute
+          associated with the transaction was lost.
+
+      - name: first_dispute_at
+        description: Earliest dispute creation timestamp for the transaction.
+
+      - name: latest_dispute_at
+        description: Most recent dispute creation timestamp for the transaction.
+
+  - name: int_transactions_failure
+
+    description: >
+      Failed payment attempts (status = requires_payment_method), one
+      row per transaction_id, enriched with the failure's
+      recoverability classification from failure_reason_mapping.
+
+    columns:
+      - name: transaction_id
+        description: Unique identifier of the failed payment transaction.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: failure_code
+        description: Raw failure reason code.
+        data_tests:
+          - not_null
+
+      - name: failure_category
+        description: soft_decline or hard_decline, from failure_reason_mapping.
+        data_tests:
+          - not_null
+
+      - name: failure_recoverability
+        description: high, medium, or low - how recoverable this failure class is.
+        data_tests:
+          - not_null
+
+      - name: amount
+        description: Transaction amount in major currency units.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: ISO currency code.
+        data_tests:
+          - not_null
+
+  - name: int_transactions_customer_daily
+
+    description: >
+      One row per customer per transaction_date on which they had at
+      least one resolved payment attempt (succeeded or
+      requires_payment_method - canceled/requires_action/processing
+      are excluded as not-yet-resolved). Daily counts feed the
+      rolling-30-day window logic in mart_customer_payment_health.
+
+    columns:
+      - name: customer_id
+        description: Customer who transacted.
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Calendar date of the customer's activity.
+        data_tests:
+          - not_null
+
+      - name: daily_attempt_count
+        description: Resolved payment attempts (succeeded + requires_payment_method) that day.
+        data_tests:
+          - not_null
+
+      - name: daily_success_count
+        description: Successful payments that day.
+        data_tests:
+          - not_null
+
+      - name: daily_failure_count
+        description: Failed (requires_payment_method) payments that day.
+        data_tests:
+          - not_null

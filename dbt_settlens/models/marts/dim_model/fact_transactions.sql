@@ -13,7 +13,7 @@ SELECT
     transaction_created_at,
 
     -- Transaction measures
-    amount,
+    amount_minor,
     currency,
 
     -- Payment attributes

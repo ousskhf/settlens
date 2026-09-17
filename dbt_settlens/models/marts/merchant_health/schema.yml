@@ -1,0 +1,188 @@
+version: 2
+
+models:
+
+  - name: mart_merchant_health
+
+    description: >
+      Daily merchant-level payment health mart used to monitor
+      authorization performance, failed payment value, refunds,
+      disputes, and dispute outcomes.
+      Grain is one row per metric_date, merchant_id, and currency.
+      Transaction currency remains part of the grain so monetary
+      values from different currencies are not combined.
+
+    columns:
+
+      # ========================================================
+      # GRAIN
+      # ========================================================
+
+      - name: metric_date
+        description: >
+          Transaction cohort date used for daily merchant health
+          reporting.
+        data_tests:
+          - not_null
+
+      - name: merchant_id
+        description: >
+          Unique identifier of the merchant associated with the
+          payment activity.
+        data_tests:
+          - not_null
+
+      - name: currency
+        description: >
+          Transaction currency associated with payment-value metrics.
+          Currency is retained in the mart grain to prevent monetary
+          values from different currencies being aggregated together.
+        data_tests:
+          - not_null
+
+
+      # ========================================================
+      # MERCHANT DIMENSIONS
+      # ========================================================
+
+      - name: merchant_name_token
+        description: >
+          Synthetic merchant name or token used to identify the
+          merchant without exposing real merchant information.
+
+      - name: mcc
+        description: >
+          Merchant Category Code associated with the merchant.
+
+      - name: merchant_category
+        description: >
+          Human-readable business category assigned to the merchant.
+
+      - name: merchant_country
+        description: >
+          Country associated with the merchant account.
+
+      - name: merchant_tier
+        description: >
+          Commercial or operational merchant tier used for
+          peer-level merchant performance analysis.
+
+      - name: risk_category
+        description: >
+          Risk segment assigned to the merchant and used for
+          merchant risk and dispute analysis.
+
+      - name: settlement_currency
+        description: >
+          Default settlement currency associated with the merchant.
+
+      - name: account_status
+        description: >
+          Current operational status of the merchant account.
+
+      - name: onboarding_date
+        description: >
+          Date on which the merchant was onboarded to the platform.
+
+
+      # ========================================================
+      # PAYMENT COUNTS
+      # ========================================================
+
+      - name: total_transactions
+        description: >
+          Total number of payment transactions for the
+          merchant, date, and currency.
+
+      - name: eligible_payment_attempts
+        description: >
+          Number of payment attempts included in the authorization
+          rate denominator. Currently includes succeeded and
+          requires_payment_method transaction statuses.
+
+      - name: successful_transactions
+        description: >
+          Number of transactions with succeeded status.
+
+      - name: failed_transactions
+        description: >
+          Number of transactions classified as failed payment
+          attempts using requires_payment_method status.
+
+      - name: canceled_transactions
+        description: >
+          Number of transactions with canceled status.
+
+      - name: requires_action_transactions
+        description: >
+          Number of transactions requiring further customer
+          authentication or action.
+
+      - name: processing_transactions
+        description: >
+          Number of transactions still in processing status.
+
+
+      # ========================================================
+      # PAYMENT VALUE
+      # ========================================================
+
+      - name: attempted_payment_value
+        description: >
+          Total payment value in major currency units for eligible
+          authorization attempts.
+
+      - name: successful_payment_value
+        description: >
+          Total value of successful payments in major currency units.
+
+      - name: failed_payment_value
+        description: >
+          Total value of failed payment attempts in major currency
+          units for the merchant and currency.
+
+
+      # ========================================================
+      # REFUND & DISPUTE COUNTS
+      # ========================================================
+
+      - name: refunded_transactions
+        description: >
+          Number of successful transactions associated with at least
+          one refund record.
+
+      - name: disputed_transactions
+        description: >
+          Number of successful transactions associated with at least
+          one payment dispute.
+
+      - name: lost_dispute_transactions
+        description: >
+          Number of successful transactions associated with at least
+          one dispute whose outcome was lost.
+
+
+      # ========================================================
+      # PRIMARY MERCHANT HEALTH KPIs
+      # ========================================================
+
+      - name: merchant_authorization_rate_pct
+        description: >
+          Percentage of eligible payment attempts that succeeded.
+          Calculated as successful_transactions divided by
+          eligible_payment_attempts multiplied by 100.
+
+      - name: merchant_refund_rate_pct
+        description: >
+          Percentage of successful transactions associated with
+          at least one refund record.
+
+      - name: merchant_dispute_rate_pct
+        description: >
+          Percentage of successful transactions associated with
+          at least one dispute.
+
+      - name: merchant_lost_dispute_rate_pct
+        description: >
+          Percentage of successful transactions associated with
+          at least one lost dispute.

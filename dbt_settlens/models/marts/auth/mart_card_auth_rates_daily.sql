@@ -11,8 +11,8 @@ SELECT
     SUM(is_failed) as failed_transactions,
     ROUND(
     100 * SUM(is_successful) / COUNT(*), 2) AS authorization_rate,
-    SUM(amount) as total_payment_volume, --need to add exchange rate
-    SUM(CASE WHEN is_successful = 1 THEN amount ELSE 0 END)
+    SUM(amount_minor) as total_payment_volume, --need to add exchange rate
+    SUM(CASE WHEN is_successful = 1 THEN amount_minor ELSE 0 END)
     AS successful_payment_volume
 FROM {{ ref('int_transactions_auth') }}
 WHERE payment_method_type = 'card'

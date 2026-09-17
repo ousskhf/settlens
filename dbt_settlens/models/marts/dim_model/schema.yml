@@ -214,8 +214,8 @@ models:
       # Transaction measures
       # -------------------------
 
-      - name: amount
-        description: "Transaction amount expressed in major currency units."
+      - name: amount_minor
+        description: "Transaction amount in the currency's minor unit (e.g. cents for USD)."
 
       - name: processing_time_ms
         description: "Transaction processing time in milliseconds."
@@ -268,11 +268,12 @@ models:
           when applicable.
 
       - name: risk_score
-        description: "Transaction risk score."
+        description: "Composite risk score, range 0-1, derived from cross-border/MCC/funding signals."
 
       - name: risk_bucket
         description: >
-          Risk classification derived from risk_score.
+          Risk classification derived from risk_score: low (<0.2), medium (<0.5),
+          high (<0.8), very_high (>=0.8).
 
       # -------------------------
       # Analytical flags
