@@ -1,4 +1,4 @@
-# Settlens — Looker Studio Dashboard
+# Settlens — Looker Studio Dashboard (Sample information)- Later fill this with the common  Project ID info and related data marts
 
 ## Architecture
 
