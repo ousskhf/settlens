@@ -41,6 +41,10 @@ Notion Task → PR → commit(s)
 
 `research` tasks stop at step 1 — no branch/PR/commit, since the output is a doc, not code.
 
+## Architecture Decision Records
+
+Tool/framework choices, and naming or schema conventions that are hard to reverse, get an ADR under [`docs/adr/`](docs/adr/README.md) (use the `docs` task type). Skip it for reversible, low-stakes changes.
+
 ## Linking Notion ↔ GitHub
 
 - Notion task: `GitHub PR` URL property — after `gh pr create` returns the PR URL, paste it into this field on the task (manual, no automation).
