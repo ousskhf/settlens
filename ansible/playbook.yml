@@ -80,11 +80,11 @@
         path: "{{ repo_dest }}/.git"
       register: repo_git_dir
 
-    - name: Pause for manual GitHub Deploy Key setup (first run only)
-      ansible.builtin.pause:
-        prompt: |
-          Add this as a read-only Deploy Key on https://github.com/ousskhf/settlens/settings/keys ,
-          then press enter to continue:
+    - name: Show the deploy key if the repo hasn't been cloned yet
+      ansible.builtin.debug:
+        msg: |
+          Add this as a read-only Deploy Key on https://github.com/ousskhf/settlens/settings/keys,
+          then rerun this playbook - the git clone task below will fail until you do.
 
           {{ deploy_pubkey.content | b64decode }}
       when: not repo_git_dir.stat.exists
