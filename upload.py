@@ -1,7 +1,8 @@
-from datetime import datetime
 from pathlib import Path
 from google.cloud import storage
 import os
+
+from ingestion.gcs_paths import build_blob_path
 
 
 def upload_to_lake(file_path, dataset,storage_client):
@@ -25,20 +26,8 @@ def upload_to_lake(file_path, dataset,storage_client):
     if not file_path.is_file():
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    # Get current date
-    today = datetime.now()
-
-    year = today.strftime("%Y")
-    month = today.strftime("%m")
-    day = today.strftime("%d")
-
-    # Get only the filename
-    file_name = file_path.name
-
     # Build GCS path
-    blob_path = (
-        f"settlens/raw/{dataset}/{year}/{month}/{day}/{file_name}"
-    )
+    blob_path = build_blob_path(dataset, file_path.name)
 
     print(f"Local file: {file_path}")
     print(f"GCS path: {blob_path}")
