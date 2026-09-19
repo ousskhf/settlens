@@ -26,4 +26,4 @@ Skip it for reversible, low-stakes changes, a normal PR description is enough fo
 | [0001](0001-single-dbt-project-under-dbt_settlens.md) | Consolidate on a single dbt project: `dbt_settlens` | Accepted |
 | [0002](0002-parameterize-gcp-project-via-env-var.md) | Parameterize the BigQuery source project via `GCP_PROJECT_ID` | Accepted |
 | [0003](0003-branch-from-latest-main-before-scaffolding.md) | Always branch from latest `main` before scaffolding shared files | Accepted |
-| [0004](0004-self-hosted-airflow-via-docker-compose.md) | Orchestrate the batch pipeline with self-hosted Airflow via Docker Compose | Proposed |
+| [0004](0004-self-hosted-airflow-via-docker-compose.md) | Orchestrate the batch pipeline with self-hosted Airflow via Docker Compose | Accepted |

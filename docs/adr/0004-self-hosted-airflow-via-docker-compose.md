@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed, PR [#13](../../pull/13) open since 2026-09-16, implemented on `feat/airflow-batch-pipeline`
+Accepted, merged via PR [#13](../../pull/13) on 2026-09-19 (`bb3d65e`)
 
 ## Context
 
@@ -22,3 +22,4 @@ Self-host Airflow 3.3.1 via Docker Compose, using `LocalExecutor` with Postgres 
 - New GCP resources were created directly during testing, outside any IaC: GCS bucket `ousskhf-settlens-raw-2249` and a `storage.objectAdmin` grant on it. These are unmanaged until Terraform is introduced.
 - DAG scheduling stays manual-trigger for now; automated scheduling, CI, and a managed-orchestrator migration are explicitly out of scope for this decision and would need their own ADR if pursued.
 - Airflow 3.x's split services (`airflow-dag-processor` as a separate mandatory service, `airflow-apiserver` replacing the webserver) and a couple of non-obvious Docker fixes (`ENV HOME=/home/airflow`, self-registering `/etc/passwd` for the compose-assigned UID) are now load-bearing parts of the Dockerfile; anyone upgrading the base image needs to re-verify both.
+- Retry behavior was added before merge: DAG-level `default_args` set `retries=2` and `retry_delay=timedelta(minutes=2)`, applied uniformly to every task rather than splitting `dbt build` into separate `run`/`test` tasks with different retry policies. This trades a few minutes of delay on a genuine dbt test failure (retries don't fix bad data, they just re-run and fail the same way) for keeping the DAG simple; revisit if slow failure feedback becomes a real pain point.
