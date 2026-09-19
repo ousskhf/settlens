@@ -6,6 +6,7 @@ SELECT
     customer_id,
     merchant_id,
     payment_method_id,
+    transaction_created_at,
     date(transaction_created_at) as transaction_date,
     amount_minor,
     currency,
