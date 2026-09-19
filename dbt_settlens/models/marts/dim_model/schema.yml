@@ -1,0 +1,290 @@
+version: 2
+
+models:
+
+  # ============================================================
+  # DIMENSIONS
+  # ============================================================
+
+  - name: dim_customer
+    description: >
+      Customer dimension containing descriptive attributes used to
+      analyze customer transactions.
+
+      Grain: one row per customer.
+
+    columns:
+
+      - name: customer_id
+        description: "Primary key. Unique identifier for the customer."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_unique_id
+        description: "Identifier representing the underlying unique customer."
+
+      - name: customer_name_token
+        description: "Synthetic token representing the customer name."
+
+      - name: home_country
+        description: "Customer's home country."
+
+      - name: preferred_currency
+        description: "Customer's preferred currency."
+
+      - name: customer_segment
+        description: "Customer segment."
+
+      - name: customer_value_segment
+        description: "Customer value segment. [low_value, medium_value, high_value]"
+
+      - name: risk_level
+        description: "Customer risk classification."
+
+      - name: account_status
+        description: "Current customer account status."
+
+      - name: is_active
+        description: "Whether the customer's account is currently active."
+
+      - name: customer_since_date
+        description: "Date on which the customer joined."
+
+
+  - name: dim_merchant
+    description: >
+      Merchant dimension containing descriptive attributes used to
+      analyze merchant transactions.
+
+      Grain: one row per merchant.
+
+    columns:
+
+      - name: merchant_id
+        description: "Primary key. Unique identifier for the merchant."
+        tests:
+          - not_null
+          - unique
+
+      - name: merchant_name_token
+        description: "Synthetic token representing the merchant name."
+
+      - name: mcc
+        description: "Merchant Category Code."
+
+      - name: merchant_category
+        description: "Merchant category name."
+
+      - name: merchant_country
+        description: "Country in which the merchant operates."
+
+      - name: merchant_tier
+        description: "Merchant commercial tier."
+
+      - name: risk_category
+        description: "Merchant risk classification."
+
+      - name: settlement_currency
+        description: "Currency used for merchant settlement."
+
+      - name: processing_fee_pct
+        description: >
+          Merchant processing fee expressed as a decimal fraction.
+          For example, 0.0149 represents a 1.49% processing fee.
+
+      - name: account_status
+        description: "Current merchant account status."
+
+      - name: is_active
+        description: "Whether the merchant's account is currently active."
+
+      - name: onboarding_date
+        description: "Date on which the merchant was onboarded."
+
+
+  - name: dim_date
+    description: >
+      Calendar dimension containing one row per calendar date
+      from 2025-01-01 to 2030-12-31.
+
+    columns:
+      - name: Date
+        description: "Primary key. Calendar date."
+        tests:
+          - not_null
+          - unique
+
+      - name: Year
+        description: "Calendar year."
+
+      - name: Week
+        description: "Week number of the year."
+
+      - name: Day
+        description: "Day of the month."
+
+      - name: Quarter
+        description: "Calendar quarter."
+
+      - name: Month
+        description: "Month number."
+
+      - name: Month_Name
+        description: "Full name of the calendar month."
+
+      - name: Day_Of_Week
+        description: "ISO day of week, where Monday is 1 and Sunday is 7."
+
+      - name: Day_Of_Week_Name
+        description: "Full name of the day of the week."
+
+      - name: Is_Weekday
+        description: "TRUE when the date is Monday through Friday."
+
+      - name: Days_In_Month
+        description: "Number of days in the month."
+
+
+  # ============================================================
+  # FACT
+  # ============================================================
+
+  - name: fact_transactions
+    description: >
+      Transaction fact table containing transaction-level measures
+      and attributes used for analytical reporting.
+
+      Grain: one row per transaction.
+
+      Processing transactions are excluded upstream in
+      int_transactions.
+
+    columns:
+
+      - name: transaction_id
+        description: >
+          Primary key. Unique identifier for the transaction.
+          Grain of the fact table is one row per transaction.
+        tests:
+          - not_null
+          - unique
+
+      # -------------------------
+      # Foreign keys
+      # -------------------------
+
+      - name: customer_id
+        description: >
+          Foreign key referencing dim_customer.customer_id.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+
+      - name: merchant_id
+        description: >
+          Foreign key referencing dim_merchant.merchant_id.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_merchant')
+                field: merchant_id
+
+      - name: transaction_date
+        description: >
+          Foreign key referencing dim_date.date_day.
+          Represents the calendar date on which the transaction occurred.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: Date
+
+      - name: payment_method_id
+        description: >
+          Identifier of the payment method used for the transaction.
+          No payment method dimension is currently modeled.
+
+      # -------------------------
+      # Transaction measures
+      # -------------------------
+
+      - name: amount_minor
+        description: "Transaction amount in the currency's minor unit (e.g. cents for USD)."
+
+      - name: processing_time_ms
+        description: "Transaction processing time in milliseconds."
+
+      # -------------------------
+      # Transaction attributes
+      # -------------------------
+      - name: transaction_created_at
+        description: "Timestamp when the transaction was created."
+
+      - name: currency
+        description: "Currency of the transaction."
+
+      - name: payment_method_type
+        description: "Type of payment method used."
+
+      - name: card_brand
+        description: "Card brand when the payment method is a card."
+
+      - name: card_funding
+        description: "Card funding type when the payment method is a card."
+
+      - name: cardholder_present
+        description: "Whether the cardholder was physically present."
+
+      - name: authorization_method
+        description: "Method used to authorize the transaction."
+
+      - name: mcc
+        description: "Merchant Category Code associated with the transaction."
+
+      - name: merchant_country
+        description: "Country of the merchant."
+
+      - name: issuer_country
+        description: "Country of the card issuer."
+
+      - name: is_cross_border
+        description: "Whether the transaction is cross-border."
+
+      - name: capture_method
+        description: "Method used to capture the transaction."
+
+      - name: status
+        description: "Final transaction status."
+
+      - name: failure_code
+        description: >
+          Code describing the reason for a failed transaction,
+          when applicable.
+
+      - name: risk_score
+        description: "Composite risk score, range 0-1, derived from cross-border/MCC/funding signals."
+
+      - name: risk_bucket
+        description: >
+          Risk classification derived from risk_score: low (<0.2), medium (<0.5),
+          high (<0.8), very_high (>=0.8).
+
+      # -------------------------
+      # Analytical flags
+      # -------------------------
+
+      - name: is_successful
+        description: >
+          Indicator equal to 1 when the transaction succeeded
+          and 0 otherwise.
+
+      - name: is_failed
+        description: >
+          Indicator equal to 1 when the transaction failed
+          and 0 otherwise.
