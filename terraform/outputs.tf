@@ -10,6 +10,10 @@ output "region" {
   value = var.region
 }
 
+output "storage_location" {
+  value = var.storage_location
+}
+
 output "project_id" {
   value = var.project_id
 }
