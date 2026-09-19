@@ -22,7 +22,7 @@ The batch pipeline (GCS upload → BigQuery raw load → dbt build) is orchestra
 
 1. Copy `.env.example` to `.env` and fill in your own values (`GCP_PROJECT_ID`, `GCS_BUCKET_NAME`, `BQ_DATASET`, `DBT_DATASET`, etc.).
 2. Add `AIRFLOW_UID=$(id -u)` to `.env` (run on *this* machine, not copied from elsewhere, so bind-mounted files aren't owned by root).
-3. Drop your own GCP service-account key at `./keys/gcp-service-account.json` (gitignored, copy it securely, don't commit it).
+3. Set up GCP auth: either run `gcloud auth application-default login` (or rely on a GCE VM's attached service account), or drop a service-account key at `./keys/gcp-service-account.json` (gitignored, copy it securely, don't commit it) and set `GOOGLE_APPLICATION_CREDENTIALS` in `.env` to that path.
 4. Check port `8081` is free, or change the `airflow-apiserver` port mapping in `docker-compose.yml` if not.
 
 **Start it up:**
