@@ -84,9 +84,3 @@ gcloud compute instances stop settlens-airflow-vm --zone=europe-west1-b
 gcloud compute instances start settlens-airflow-vm --zone=europe-west1-b
 ```
 Containers restart automatically once the VM boots - no need to rerun the playbook just for a stop/start.
-
-**Gotchas we already hit, so you don't have to:**
-- Auth is via the VM's attached service account (ADC), not a key file - `dbt_settlens/profiles.yml` uses `method: oauth` and `docker-compose.yml` doesn't set `GOOGLE_APPLICATION_CREDENTIALS`. Don't reintroduce a key file.
-- `GCP_REGION` in `.env` is the **BigQuery job location**, not the VM's compute region - it must match the datasets' actual location (`EU`), or every dbt-run BigQuery job fails with a location-mismatch error.
-- The per-layer `dbt build --select path:models/...` commands in the DAG need `--indirect-selection=buildable`, otherwise dbt's default `eager` mode pulls cross-layer tests into a layer before their models are actually built, and they fail with a database error on a fresh warehouse.
-- Team members need `roles/compute.osAdminLogin` (not just `osLogin`) to get sudo on the VM via OS Login - Ansible's `become: true` needs it.
