@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
@@ -16,6 +16,10 @@ with DAG(
     start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["settlens"],
+    default_args={
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    },
 ) as dag:
 
     validate_input_files = BashOperator(
