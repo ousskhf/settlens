@@ -1,0 +1,12 @@
+# Copy to inventory.ini (gitignored) and fill in the two values below.
+#
+# 1. After `terraform apply`, run once from your laptop:
+#      gcloud compute config-ssh --project settlens-lewagon
+#    This adds a `compute.settlens-airflow-vm` entry to ~/.ssh/config that
+#    tunnels SSH through IAP automatically - no public IP/port needed.
+#
+# 2. Get your OS Login POSIX username:
+#      gcloud compute os-login describe-profile --format='value(posixAccounts[0].username)'
+
+[settlens_vm]
+compute.settlens-airflow-vm ansible_user=CHANGE_ME_OSLOGIN_USERNAME

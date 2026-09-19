@@ -1,0 +1,10 @@
+project_id   = "settlens-lewagon"
+region       = "europe-west1"
+zone         = "europe-west1-b"
+machine_type = "e2-standard-2"
+
+team_emails = [
+  "ouss.khf@gmail.com",
+  "christos.patsalis12@gmail.com",
+  "hkrishnan.pro@gmail.com",
+]

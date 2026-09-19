@@ -9,7 +9,6 @@ x-airflow-common: &airflow-common
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-settlens_dev_jwt_secret}
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     DBT_PROFILES_DIR: /opt/repo/dbt_settlens
-    GOOGLE_APPLICATION_CREDENTIALS: /opt/repo/keys/gcp-service-account.json
   env_file:
     - .env
   volumes:
@@ -48,7 +47,7 @@ services:
           echo "airflow:x:$(id -u):0::/home/airflow:/bin/bash" >> /etc/passwd
         fi
         airflow db migrate
-        airflow users create --username airflow --password airflow --firstname Air --lastname Flow --role Admin --email admin@example.com
+        airflow users create --username airflow --password ${AIRFLOW_WWW_USER_PASSWORD:-airflow} --firstname Air --lastname Flow --role Admin --email admin@example.com
 
   airflow-scheduler:
     <<: *airflow-common

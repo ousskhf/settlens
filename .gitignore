@@ -11,3 +11,13 @@ dbt_settlens/logs/
 dbt_settlens/.user.yml
 .env
 keys/
+
+# Terraform
+terraform/.terraform/
+terraform/terraform.tfvars
+terraform/*.tfplan
+
+# Ansible
+ansible/inventory.ini
+ansible/*.retry
+ansible/.secrets/

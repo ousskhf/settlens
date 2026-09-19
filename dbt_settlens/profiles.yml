@@ -3,9 +3,8 @@ dbt_settlens:
   outputs:
     dev:
       type: bigquery
-      method: service-account
+      method: oauth
       project: "{{ env_var('GCP_PROJECT_ID') }}"
       dataset: "{{ env_var('DBT_DATASET') }}"
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
       location: "{{ env_var('GCP_REGION', 'EU') or 'EU' }}"
       threads: 4
