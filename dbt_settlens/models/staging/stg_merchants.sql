@@ -5,23 +5,39 @@ with source as (
 
 ),
 
-renamed as (
+cleaned as (
 
     select
-        merchant_id,
-        merchant_name_token,
 
-        mcc,
-        merchant_category,
-        merchant_country,
+        cast(merchant_id as string)
+            as merchant_id,
 
-        merchant_tier,
-        risk_category,
+        trim(merchant_name_token)
+            as merchant_name_token,
 
-        settlement_currency,
-        processing_fee_pct,
+        cast(mcc as string)
+            as mcc,
 
-        account_status,
+        lower(trim(merchant_category))
+            as merchant_category,
+
+        upper(trim(merchant_country))
+            as merchant_country,
+
+        lower(trim(merchant_tier))
+            as merchant_tier,
+
+        lower(trim(risk_category))
+            as risk_category,
+
+        upper(trim(settlement_currency))
+            as settlement_currency,
+
+        cast(processing_fee_pct as numeric)
+            as processing_fee_pct,
+
+        lower(trim(account_status))
+            as account_status,
 
         date(
             timestamp_micros(
@@ -37,12 +53,15 @@ renamed as (
             div(record_last_updated, 1000)
         ) as record_last_updated,
 
-        data_version,
-        source_system
+        cast(data_version as int64)
+            as data_version,
+
+        lower(trim(source_system))
+            as source_system
 
     from source
 
 )
 
 select *
-from renamed
+from cleaned
