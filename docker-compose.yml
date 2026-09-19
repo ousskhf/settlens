@@ -1,5 +1,6 @@
 x-airflow-common: &airflow-common
   build: .
+  restart: unless-stopped
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -22,6 +23,7 @@ x-airflow-common: &airflow-common
 services:
   postgres:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -35,6 +37,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    restart: "no"
     entrypoint: /bin/bash
     # The official entrypoint normally self-registers a passwd entry for the
     # arbitrary AIRFLOW_UID (needed by airflow's getuser() call); bypassing
