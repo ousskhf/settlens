@@ -130,6 +130,6 @@ resource "google_project_iam_member" "team_os_login" {
   for_each = toset(var.team_emails)
 
   project = var.project_id
-  role    = "roles/compute.osLogin"
+  role    = "roles/compute.osAdminLogin" # grants passwordless sudo on the VM, required for Ansible's become: true
   member  = "user:${each.value}"
 }
