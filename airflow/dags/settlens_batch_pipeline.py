@@ -43,21 +43,21 @@ with DAG(
 
     dbt_build_staging = BashOperator(
         task_id="dbt_build_staging",
-        bash_command=f"cd {DBT_DIR} && dbt seed && dbt build --select path:models/staging",
+        bash_command=f"cd {DBT_DIR} && dbt seed && dbt build --select path:models/staging --indirect-selection=buildable",
         env=TASK_ENV,
         append_env=True,
     )
 
     dbt_build_intermediate = BashOperator(
         task_id="dbt_build_intermediate",
-        bash_command=f"cd {DBT_DIR} && dbt build --select path:models/intermediate",
+        bash_command=f"cd {DBT_DIR} && dbt build --select path:models/intermediate --indirect-selection=buildable",
         env=TASK_ENV,
         append_env=True,
     )
 
     dbt_build_marts = BashOperator(
         task_id="dbt_build_marts",
-        bash_command=f"cd {DBT_DIR} && dbt build --select path:models/marts",
+        bash_command=f"cd {DBT_DIR} && dbt build --select path:models/marts --indirect-selection=buildable",
         env=TASK_ENV,
         append_env=True,
     )
