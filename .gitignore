@@ -11,6 +11,7 @@ dbt_settlens/logs/
 dbt_settlens/.user.yml
 .env
 keys/
+logs/
 
 # Terraform
 terraform/.terraform/
