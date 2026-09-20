@@ -1,0 +1,105 @@
+[0m22:09:05.184165 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b87283bf0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b87855730>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b87283d40>]}
+
+
+============================== 22:09:05.189638 | dce1af0e-0f70-4ff8-b110-01f4ea4dd762 ==============================
+[0m22:09:05.189638 [info ] [MainThread]: Running with dbt=1.12.4
+[0m22:09:05.190755 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'log_cache_events': 'False', 'debug': 'False', 'hints_enabled': 'True', 'send_anonymous_usage_stats': 'True', 'partial_parse': 'True', 'indirect_selection': 'eager', 'cache_selected_only': 'False', 'invocation_command': 'dbt init', 'write_json': 'True', 'target_path': 'None', 'static_parser': 'True', 'log_format': 'default', 'maximum_seed_size_mib': '1', 'no_print': 'None', 'fail_fast': 'False', 'log_path': 'logs', 'warn_error': 'None', 'empty': 'None', 'quiet': 'False', 'profiles_dir': '/home/chris/.dbt', 'use_colors': 'True', 'version_check': 'True', 'use_experimental_parser': 'False'}
+[0m22:09:21.625032 [info ] [MainThread]: A project called dbt_settlens already exists here.
+[0m22:09:21.627104 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 16.583542, "process_in_blocks": "624", "process_kernel_time": 0.23384, "process_mem_max_rss": "109532", "process_out_blocks": "696", "process_user_time": 2.736781}
+[0m22:09:21.628072 [debug] [MainThread]: Command `dbt init` succeeded at 22:09:21.627835 after 16.58 seconds
+[0m22:09:21.628744 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b8b5bb260>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b8691a000>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x762b873f7da0>]}
+[0m22:09:21.629535 [debug] [MainThread]: Flushing usage events
+[0m22:09:22.051412 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m22:10:40.864739 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x79440fe89730>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x79440fa1ba70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x79441001a000>]}
+
+
+============================== 22:10:40.870780 | 37dea860-e32e-4bc5-a05d-88b50c938405 ==============================
+[0m22:10:40.870780 [info ] [MainThread]: Running with dbt=1.12.4
+[0m22:10:40.872001 [debug] [MainThread]: running dbt with arguments {'log_path': 'logs', 'log_format': 'default', 'maximum_seed_size_mib': '1', 'log_cache_events': 'False', 'version_check': 'True', 'use_experimental_parser': 'False', 'profiles_dir': '/home/chris/.dbt', 'no_print': 'None', 'cache_selected_only': 'False', 'hints_enabled': 'True', 'static_parser': 'True', 'use_colors': 'True', 'warn_error': 'None', 'introspect': 'True', 'empty': 'None', 'write_json': 'True', 'printer_width': '80', 'invocation_command': 'dbt init', 'quiet': 'False', 'indirect_selection': 'eager', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'send_anonymous_usage_stats': 'True', 'fail_fast': 'False', 'partial_parse': 'True', 'debug': 'False', 'target_path': 'None'}
+[0m22:10:49.443183 [info ] [MainThread]: A project called dbt_settlens already exists here.
+[0m22:10:49.445313 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 8.719969, "process_in_blocks": "0", "process_kernel_time": 0.229575, "process_mem_max_rss": "107368", "process_out_blocks": "16", "process_user_time": 2.747724}
+[0m22:10:49.446257 [debug] [MainThread]: Command `dbt init` succeeded at 22:10:49.446055 after 8.72 seconds
+[0m22:10:49.446916 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x79440f10aed0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x79440fed7980>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x794410a52c30>]}
+[0m22:10:49.447681 [debug] [MainThread]: Flushing usage events
+[0m22:10:49.857568 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m22:11:42.498262 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8eaf56a0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8d2d8710>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8de66390>]}
+
+
+============================== 22:11:42.503406 | 9014653c-d550-40ce-b102-74730501ce56 ==============================
+[0m22:11:42.503406 [info ] [MainThread]: Running with dbt=1.12.4
+[0m22:11:42.504491 [debug] [MainThread]: running dbt with arguments {'cache_selected_only': 'False', 'debug': 'False', 'log_format': 'default', 'send_anonymous_usage_stats': 'True', 'profiles_dir': '/home/chris/.dbt', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'no_print': 'None', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'fail_fast': 'False', 'use_colors': 'True', 'printer_width': '80', 'hints_enabled': 'True', 'target_path': 'None', 'invocation_command': 'dbt init', 'introspect': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'log_path': 'logs', 'quiet': 'False', 'static_parser': 'True', 'write_json': 'True', 'partial_parse': 'True', 'warn_error': 'None', 'maximum_seed_size_mib': '1', 'version_check': 'True'}
+[0m22:11:49.639460 [debug] [MainThread]: Starter project path: /home/chris/code/christosp12-blip/settlens_de_project/settlens/.venv/lib/python3.12/site-packages/dbt/include/starter_project
+[0m22:11:49.648775 [info ] [MainThread]: Setting up your profile.
+[0m22:13:33.835465 [info ] [MainThread]: Profile dbt_settlens written to /home/chris/.dbt/profiles.yml using target's profile_template.yml and your supplied values.
+[0m22:13:33.845868 [info ] [MainThread]: Running dbt debug to validate the project...
+[0m22:13:33.846901 [info ] [MainThread]: dbt version: 1.12.4
+[0m22:13:33.847539 [info ] [MainThread]: python version: 3.12.8
+[0m22:13:33.848104 [info ] [MainThread]: python path: /home/chris/code/christosp12-blip/settlens_de_project/settlens/.venv/bin/python
+[0m22:13:33.848628 [info ] [MainThread]: os info: Linux-6.8.0-1066-gcp-x86_64-with-glibc2.35
+[0m22:13:33.954858 [info ] [MainThread]: Using profiles dir at /home/chris/.dbt
+[0m22:13:33.955662 [info ] [MainThread]: Using profiles.yml file at /home/chris/.dbt/profiles.yml
+[0m22:13:33.956371 [info ] [MainThread]: Using dbt_project.yml file at /home/chris/code/christosp12-blip/settlens_de_project/settlens/dbt_settlens/dbt_project.yml
+[0m22:13:33.957004 [info ] [MainThread]: adapter type: bigquery
+[0m22:13:33.957587 [info ] [MainThread]: adapter version: 1.12.0
+[0m22:13:34.151371 [info ] [MainThread]: Configuration:
+[0m22:13:34.152182 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m22:13:34.152872 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m22:13:34.153472 [info ] [MainThread]: Required dependencies:
+[0m22:13:34.154062 [debug] [MainThread]: Executing "git --help"
+[0m22:13:34.160511 [debug] [MainThread]: STDOUT: "b"usage: git [--version] [--help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--super-prefix=<path>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m22:13:34.161245 [debug] [MainThread]: STDERR: "b''"
+[0m22:13:34.161808 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m22:13:34.162492 [info ] [MainThread]: Connection:
+[0m22:13:34.163227 [info ] [MainThread]:   method: oauth
+[0m22:13:34.163842 [info ] [MainThread]:   database: lewagon-de-bootcamp-491611
+[0m22:13:34.164552 [info ] [MainThread]:   execution_project: lewagon-de-bootcamp-491611
+[0m22:13:34.165249 [info ] [MainThread]:   schema: dbt_okr_mart
+[0m22:13:34.165908 [info ] [MainThread]:   location: EU
+[0m22:13:34.166604 [info ] [MainThread]:   priority: interactive
+[0m22:13:34.167333 [info ] [MainThread]:   maximum_bytes_billed: None
+[0m22:13:34.168017 [info ] [MainThread]:   reservation: None
+[0m22:13:34.168696 [info ] [MainThread]:   impersonate_service_account: None
+[0m22:13:34.169430 [info ] [MainThread]:   job_retry_deadline_seconds: None
+[0m22:13:34.170120 [info ] [MainThread]:   job_retries: 1
+[0m22:13:34.170777 [info ] [MainThread]:   job_creation_timeout_seconds: None
+[0m22:13:34.171500 [info ] [MainThread]:   job_execution_timeout_seconds: 300
+[0m22:13:34.172213 [info ] [MainThread]:   job_link_info_level_log: False
+[0m22:13:34.172879 [info ] [MainThread]:   timeout_seconds: 300
+[0m22:13:34.173610 [info ] [MainThread]:   client_id: None
+[0m22:13:34.174334 [info ] [MainThread]:   token_uri: None
+[0m22:13:34.175024 [info ] [MainThread]:   compute_region: None
+[0m22:13:34.175691 [info ] [MainThread]:   dataproc_cluster_name: None
+[0m22:13:34.176413 [info ] [MainThread]:   gcs_bucket: None
+[0m22:13:34.177125 [info ] [MainThread]:   dataproc_batch: None
+[0m22:13:34.178111 [info ] [MainThread]: Registered adapter: bigquery=1.12.0
+[0m22:13:34.423647 [debug] [MainThread]: Acquiring new bigquery connection 'debug'
+[0m22:13:34.424437 [debug] [MainThread]: On debug: select 1 as id
+[0m22:13:34.425218 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m22:13:38.164545 [debug] [MainThread]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=lewagon-de-bootcamp-491611&j=bq:EU:b935a9fe-35bc-4e9c-8571-f0025913487f&page=queryresults
+[0m22:13:38.346296 [debug] [MainThread]: SQL status: OK in 0.181 seconds
+[0m22:13:38.592509 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m22:13:38.593453 [info ] [MainThread]: [32mAll checks passed![0m
+[0m22:13:38.594283 [info ] [MainThread]: Your new dbt project "dbt_settlens" was created!
+Initialized new project in /home/chris/code/christosp12-blip/settlens_de_project/settlens/dbt_settlens/dbt_settlens
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m22:13:38.595403 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 116.237335, "process_in_blocks": "2144", "process_kernel_time": 0.533903, "process_mem_max_rss": "231536", "process_out_blocks": "408", "process_user_time": 4.745904}
+[0m22:13:38.596539 [debug] [MainThread]: Command `dbt init` succeeded at 22:13:38.596350 after 116.24 seconds
+[0m22:13:38.597155 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m22:13:38.597809 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8f834fb0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8c89de20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x761c8d9f4770>]}
+[0m22:13:38.598560 [debug] [MainThread]: Flushing usage events
+[0m22:13:38.983730 [debug] [MainThread]: An error was encountered while trying to flush usage events
