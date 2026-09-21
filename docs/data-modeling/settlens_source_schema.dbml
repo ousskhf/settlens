@@ -1,0 +1,138 @@
+// Settlens operational-style source schema
+// Keep this file version-controlled and import it into dbdiagram.io.
+
+Table customers {
+  customer_id string [pk, not null]
+  customer_unique_id string [not null]
+  customer_name_token string
+  home_country string
+  preferred_currency string
+  customer_segment string
+  customer_value_segment string
+  risk_level string
+  account_status string
+  customer_since_date date
+  record_created_at timestamp
+  record_last_updated timestamp
+  data_version int
+  source_system string
+}
+
+Table merchants {
+  merchant_id string [pk, not null]
+  merchant_name_token string
+  mcc string
+  merchant_category string
+  merchant_country string
+  merchant_tier string
+  risk_category string
+  settlement_currency string
+  processing_fee_pct decimal
+  account_status string
+  onboarding_date date
+  record_created_at timestamp
+  record_last_updated timestamp
+  data_version int
+  source_system string
+}
+
+Table payment_methods {
+  payment_method_id string [pk, not null]
+  customer_id string [not null]
+  payment_method_type string
+  card_brand string
+  card_funding string
+  issuer_country string
+  card_fingerprint_token string
+  wallet_type string
+  bank_network string
+  method_status string
+  created_at timestamp
+  record_last_updated timestamp
+  source_system string
+}
+
+Table transactions {
+  transaction_id string [pk, not null]
+  customer_id string [not null]
+  merchant_id string [not null]
+  payment_method_id string [not null]
+  transaction_created_at timestamp [not null]
+  amount_minor bigint [not null]
+  currency string [not null]
+  payment_method_type string
+  card_brand string
+  card_funding string
+  cardholder_present boolean
+  authorization_method string
+  mcc string
+  merchant_country string
+  issuer_country string
+  is_cross_border boolean
+  capture_method string
+  status string [not null]
+  failure_code string
+  risk_score decimal
+  processing_time_ms int
+  record_created_at timestamp
+  record_last_updated timestamp
+  data_version int
+  source_system string
+}
+
+Table refunds {
+  refund_id string [pk, not null]
+  transaction_id string [not null]
+  refund_created_at timestamp [not null]
+  amount_minor bigint [not null]
+  currency string [not null]
+  refund_reason string
+  refund_status string [not null]
+  initiated_by string
+  record_created_at timestamp
+  record_last_updated timestamp
+  data_version int
+  source_system string
+}
+
+Table disputes {
+  dispute_id string [pk, not null]
+  transaction_id string [not null]
+  dispute_created_at timestamp [not null]
+  amount_minor bigint [not null]
+  currency string [not null]
+  dispute_reason string
+  dispute_status string [not null]
+  evidence_due_at timestamp
+  closed_at timestamp
+  record_created_at timestamp
+  record_last_updated timestamp
+  data_version int
+  source_system string
+}
+
+Table events {
+  event_id string [pk, not null]
+  event_type string [not null]
+  object_type string [not null]
+  object_id string [not null]
+  transaction_id string
+  customer_id string
+  merchant_id string
+  event_created_at timestamp [not null]
+  api_version string
+  livemode boolean
+  source_system string
+  payload_json json
+  record_created_at timestamp
+}
+
+Ref: payment_methods.customer_id > customers.customer_id
+Ref: transactions.customer_id > customers.customer_id
+Ref: transactions.merchant_id > merchants.merchant_id
+Ref: transactions.payment_method_id > payment_methods.payment_method_id
+Ref: refunds.transaction_id > transactions.transaction_id
+Ref: disputes.transaction_id > transactions.transaction_id
+Ref: events.transaction_id > transactions.transaction_id
+Ref: events.customer_id > customers.customer_id
+Ref: events.merchant_id > merchants.merchant_id
