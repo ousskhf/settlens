@@ -74,8 +74,8 @@ python -m ingestion.upload_daily   --run-date 2026-09-01
 python -m ingestion.load_daily_bigquery --run-date 2026-09-01
 
 # bounded backfill (edit end_date in the DAG, or):
-airflow dags backfill --start-date 2026-09-01 --end-date 2026-09-07 \
-  settlens_daily_pipeline
+airflow backfill create --dag-id settlens_daily_pipeline \
+  --from-date 2026-09-08 --to-date 2026-09-21
 ```
 
 Don't leave `@daily` running unattended — it needs the VM and scheduler up,
