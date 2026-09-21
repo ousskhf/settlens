@@ -84,3 +84,10 @@ gcloud compute instances stop settlens-airflow-vm --zone=europe-west1-b
 gcloud compute instances start settlens-airflow-vm --zone=europe-west1-b
 ```
 Containers restart automatically once the VM boots - no need to rerun the playbook just for a stop/start.
+
+## Data modelling documentation
+
+The end-to-end source, dbt warehouse and analytical mart design is
+documented here:
+
+- [Data Modelling & Analytics Warehouse](docs/data-modeling/README.md)
