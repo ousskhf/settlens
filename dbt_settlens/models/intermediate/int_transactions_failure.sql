@@ -40,8 +40,8 @@ joined as (
         fr.failure_recoverability,
         fr.recovery_action
 
-    from transactions t
-    left join failure_reasons fr
+    from transactions as t
+    left join failure_reasons as fr
         on t.failure_code = fr.failure_code
 
 )

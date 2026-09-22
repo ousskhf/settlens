@@ -1,20 +1,27 @@
 {{ config(materialized='table') }}
 
 SELECT
-  Date,
-  EXTRACT(YEAR FROM Date) AS Year,
-  EXTRACT(WEEK FROM Date) AS Week,
-  EXTRACT(DAY FROM Date) AS Day,
-  FORMAT_DATE('%Q', Date) as Quarter,
-  EXTRACT(MONTH FROM Date) AS Month,
-  FORMAT_DATE('%B', Date) as Month_Name,
-  CAST(FORMAT_DATE('%u', Date) AS INT64) AS Day_Of_Week,
-  FORMAT_DATE('%A', Date) AS Day_Of_Week_Name,
-  IF(FORMAT_DATE('%A', Date) IN ('Saturday', 'Sunday'), FALSE, TRUE) AS Is_Weekday,
-  COUNT(Date) OVER (PARTITION BY EXTRACT(YEAR FROM Date), EXTRACT(MONTH FROM Date)) AS Days_In_Month
+    calendar_date,
+    CAST(FORMAT_DATE('%u', calendar_date) AS INT64) AS day_of_week,
+    EXTRACT(YEAR FROM calendar_date) AS year,
+    EXTRACT(WEEK FROM calendar_date) AS week_number,
+    EXTRACT(DAY FROM calendar_date) AS day,
+    FORMAT_DATE('%Q', calendar_date) AS quarter_number,
+    EXTRACT(MONTH FROM calendar_date) AS month,
+    FORMAT_DATE('%B', calendar_date) AS month_name,
+    FORMAT_DATE('%A', calendar_date) AS day_of_week_name,
+    IF(FORMAT_DATE('%A', calendar_date) IN ('Saturday', 'Sunday'), FALSE, TRUE)
+        AS is_weekday,
+    COUNT(calendar_date)
+        OVER (
+            PARTITION BY
+                EXTRACT(YEAR FROM calendar_date),
+                EXTRACT(MONTH FROM calendar_date)
+        )
+        AS days_in_month
 
 FROM
-  UNNEST(
-  -- set needed time range here
-  GENERATE_DATE_ARRAY('2025-01-01', '2030-12-31', INTERVAL 1 DAY)
-  ) AS Date
+    UNNEST(
+        -- set needed time range here
+        GENERATE_DATE_ARRAY('2025-01-01', '2030-12-31', INTERVAL 1 DAY)
+    ) AS calendar_date

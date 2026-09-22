@@ -16,17 +16,14 @@ select
 
     account_status,
 
-    case
-        when account_status = 'active' then true
-        else false
-    end as is_active,
+    onboarding_date,
+
+    coalesce(account_status = 'active', false) as is_active,
 
     case
         when processing_fee_pct >= 0.03 then 'high'
         when processing_fee_pct >= 0.02 then 'medium'
         else 'low'
-    end as processing_fee_band,
+    end as processing_fee_band
 
-    onboarding_date
-
-from {{ ref('stg_merchants') }} m
+from {{ ref('stg_merchants') }}

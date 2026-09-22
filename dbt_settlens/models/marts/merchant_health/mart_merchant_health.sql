@@ -70,40 +70,41 @@ transaction_health as (
 
         case
             when t.status = 'succeeded'
-            then 1
+                then 1
             else 0
         end as is_successful,
 
         case
             when t.status = 'requires_payment_method'
-            then 1
+                then 1
             else 0
         end as is_failed,
 
         case
-            when t.status in (
-                'succeeded',
-                'requires_payment_method'
-            )
-            then 1
+            when
+                t.status in (
+                    'succeeded',
+                    'requires_payment_method'
+                )
+                then 1
             else 0
         end as is_eligible_attempt,
 
         case
             when t.status = 'canceled'
-            then 1
+                then 1
             else 0
         end as is_canceled,
 
         case
             when t.status = 'requires_action'
-            then 1
+                then 1
             else 0
         end as requires_action,
 
         case
             when t.status = 'processing'
-            then 1
+                then 1
             else 0
         end as is_processing,
 
@@ -116,13 +117,13 @@ transaction_health as (
         coalesce(d.has_lost_dispute, 0)
             as has_lost_dispute
 
-    from transactions t
+    from transactions as t
 
-    left join refunds r
-        using (transaction_id)
+    left join refunds as r
+        on t.transaction_id = r.transaction_id
 
-    left join disputes d
-        using (transaction_id)
+    left join disputes as d
+        on t.transaction_id = d.transaction_id
 
 ),
 
@@ -156,7 +157,7 @@ merchant_daily as (
         sum(
             case
                 when is_eligible_attempt = 1
-                then amount
+                    then amount
                 else 0
             end
         ) as attempted_payment_value,
@@ -164,7 +165,7 @@ merchant_daily as (
         sum(
             case
                 when is_successful = 1
-                then amount
+                    then amount
                 else 0
             end
         ) as successful_payment_value,
@@ -172,34 +173,37 @@ merchant_daily as (
         sum(
             case
                 when is_failed = 1
-                then amount
+                    then amount
                 else 0
             end
         ) as failed_payment_value,
 
         sum(
             case
-                when is_successful = 1
-                 and has_refund = 1
-                then 1
+                when
+                    is_successful = 1
+                    and has_refund = 1
+                    then 1
                 else 0
             end
         ) as refunded_transactions,
 
         sum(
             case
-                when is_successful = 1
-                 and has_dispute = 1
-                then 1
+                when
+                    is_successful = 1
+                    and has_dispute = 1
+                    then 1
                 else 0
             end
         ) as disputed_transactions,
 
         sum(
             case
-                when is_successful = 1
-                 and has_lost_dispute = 1
-                then 1
+                when
+                    is_successful = 1
+                    and has_lost_dispute = 1
+                    then 1
                 else 0
             end
         ) as lost_dispute_transactions
@@ -285,10 +289,10 @@ final as (
             2
         ) as merchant_lost_dispute_rate_pct
 
-    from merchant_daily md
+    from merchant_daily as md
 
-    left join {{ ref('stg_merchants') }} m
-        using (merchant_id)
+    left join {{ ref('stg_merchants') }} as m
+        on md.merchant_id = m.merchant_id
 
 )
 

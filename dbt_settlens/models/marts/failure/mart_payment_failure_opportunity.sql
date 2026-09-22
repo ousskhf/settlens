@@ -32,7 +32,7 @@ aggregated as (
             sum(
                 case
                     when failure_recoverability in ('high', 'medium')
-                    then amount
+                        then amount
                     else 0
                 end
             ),
@@ -61,7 +61,10 @@ with_ratios as (
         *,
 
         round(
-            safe_divide(recoverable_payment_value, nullif(failed_payment_value, 0)) * 100,
+            safe_divide(
+                recoverable_payment_value, nullif(failed_payment_value, 0)
+            )
+            * 100,
             2
         ) as recoverable_failure_pct,
 

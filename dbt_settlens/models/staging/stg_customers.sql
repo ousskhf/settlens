@@ -15,6 +15,9 @@ cleaned as (
         cast(customer_unique_id as string)
             as customer_unique_id,
 
+        cast(data_version as int64)
+            as data_version,
+
         trim(customer_name_token)
             as customer_name_token,
 
@@ -49,9 +52,6 @@ cleaned as (
         timestamp_micros(
             div(record_last_updated, 1000)
         ) as record_last_updated,
-
-        cast(data_version as int64)
-            as data_version,
 
         lower(trim(source_system))
             as source_system

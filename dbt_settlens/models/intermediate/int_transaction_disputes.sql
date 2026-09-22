@@ -15,12 +15,12 @@ aggregated as (
     select
         transaction_id,
 
-        count(*) as dispute_count,
-
-        min(dispute_created_at) as first_dispute_at,
-        max(dispute_created_at) as latest_dispute_at,
-
         1 as has_dispute,
+
+        count(*) as dispute_count,
+        min(dispute_created_at) as first_dispute_at,
+
+        max(dispute_created_at) as latest_dispute_at,
 
         countif(dispute_status = 'lost')
             as lost_dispute_count,
