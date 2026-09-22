@@ -70,6 +70,5 @@ That separation is important: **normalize for operational integrity; denormalize
 - [`01_raw_source_model.md`](01_raw_source_model.md) — source entities, conceptual model, logical model and ERD.
 - [`02_dbt_warehouse_model.md`](02_dbt_warehouse_model.md) — dbt layers and modelling responsibilities.
 - [`03_marts_and_dashboard.md`](03_marts_and_dashboard.md) — mart catalogue, KPI definitions and dashboard ideas.
-- [`04_git_workflow.md`](04_git_workflow.md) — branch, commit, push and pull-request workflow.
 - [`settlens_source_schema.dbml`](settlens_source_schema.dbml) — DBML source schema used to recreate the ERD.
 
