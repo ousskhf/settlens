@@ -56,7 +56,7 @@ flagged as (
         rolling_30d_failure_count >= 2 as is_repeat_failure_customer,
 
         rolling_30d_attempt_count > 0
-            and rolling_30d_success_count = 0
+        and rolling_30d_success_count = 0
             as no_recent_success_flag
 
     from with_rolling
@@ -65,4 +65,4 @@ flagged as (
 
 select *
 from flagged
-order by transaction_date desc, customer_id
+order by transaction_date desc, customer_id asc

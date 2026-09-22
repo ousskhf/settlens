@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: [self-hosted, nuc]
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_REGION: ${{ secrets.GCP_REGION }}
+      DBT_DATASET: ${{ secrets.DBT_DATASET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Lint SQL with sqlfluff
+        working-directory: dbt_settlens
+        run: poetry run sqlfluff lint models
+
+      - name: Check Python formatting with black
+        run: poetry run black --check upload.py ingestion airflow/dags/settlens_batch_pipeline.py
+
+      - name: dbt compile
+        working-directory: dbt_settlens
+        run: poetry run dbt compile

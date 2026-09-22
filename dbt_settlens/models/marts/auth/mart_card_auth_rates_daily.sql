@@ -6,14 +6,15 @@ SELECT
     payment_method_type,
     card_brand,
     currency,
-    count(*) as eligible_transactions,
-    SUM(is_successful) as successful_transactions,
-    SUM(is_failed) as failed_transactions,
-    ROUND(
-    100 * SUM(is_successful) / COUNT(*), 2) AS authorization_rate,
-    SUM(amount_minor) as total_payment_volume, --need to add exchange rate
-    SUM(CASE WHEN is_successful = 1 THEN amount_minor ELSE 0 END)
-    AS successful_payment_volume
+    count(*) AS eligible_transactions,
+    sum(is_successful) AS successful_transactions,
+    sum(is_failed) AS failed_transactions,
+    round(
+        100 * sum(is_successful) / count(*), 2
+    ) AS authorization_rate,
+    sum(amount_minor) AS total_payment_volume, --need to add exchange rate
+    sum(CASE WHEN is_successful = 1 THEN amount_minor ELSE 0 END)
+        AS successful_payment_volume
 FROM {{ ref('int_transactions_auth') }}
 WHERE payment_method_type = 'card'
 GROUP BY

@@ -15,6 +15,14 @@ cleaned as (
         cast(transaction_id as string)
             as transaction_id,
 
+        currency,
+
+        refund_reason,
+
+        refund_status,
+
+        data_version,
+        source_system,
         timestamp_micros(
             div(refund_created_at, 1000)
         ) as refund_created_at,
@@ -30,20 +38,12 @@ cleaned as (
             100
         ) as refund_amount,
 
-        currency,
-        refund_reason,
-        refund_status,
-
         timestamp_micros(
             div(record_created_at, 1000)
         ) as record_created_at,
-
         timestamp_micros(
             div(record_last_updated, 1000)
-        ) as record_last_updated,
-
-        data_version,
-        source_system
+        ) as record_last_updated
 
     from source
 

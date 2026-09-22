@@ -11,9 +11,6 @@ select
     risk_level,
     account_status,
     customer_since_date,
-    case
-        when account_status = 'active' then true
-        else false
-    end as is_active
+    coalesce(account_status = 'active', false) as is_active
 
 from {{ ref('stg_customers') }}

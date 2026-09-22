@@ -12,11 +12,17 @@ cleaned as (
         cast(merchant_id as string)
             as merchant_id,
 
-        trim(merchant_name_token)
-            as merchant_name_token,
-
         cast(mcc as string)
             as mcc,
+
+        cast(processing_fee_pct as numeric)
+            as processing_fee_pct,
+
+        cast(data_version as int64)
+            as data_version,
+
+        trim(merchant_name_token)
+            as merchant_name_token,
 
         lower(trim(merchant_category))
             as merchant_category,
@@ -32,9 +38,6 @@ cleaned as (
 
         upper(trim(settlement_currency))
             as settlement_currency,
-
-        cast(processing_fee_pct as numeric)
-            as processing_fee_pct,
 
         lower(trim(account_status))
             as account_status,
@@ -52,9 +55,6 @@ cleaned as (
         timestamp_micros(
             div(record_last_updated, 1000)
         ) as record_last_updated,
-
-        cast(data_version as int64)
-            as data_version,
 
         lower(trim(source_system))
             as source_system

@@ -1,0 +1,12 @@
+[sqlfluff]
+dialect = bigquery
+templater = dbt
+sql_file_exts = .sql
+
+[sqlfluff:templater:dbt]
+project_dir = .
+profiles_dir = .
+target = dev
+
+[sqlfluff:indentation]
+tab_space_size = 4

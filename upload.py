@@ -5,7 +5,7 @@ import os
 from ingestion.gcs_paths import build_blob_path
 
 
-def upload_to_lake(file_path, dataset,storage_client):
+def upload_to_lake(file_path, dataset, storage_client):
     """
     Upload a local file to the raw zone of a GCS data lake.
 
@@ -32,7 +32,6 @@ def upload_to_lake(file_path, dataset,storage_client):
     print(f"Local file: {file_path}")
     print(f"GCS path: {blob_path}")
 
-
     # Get bucket
     bucket_name = os.getenv("GCS_BUCKET_NAME")
 
@@ -40,7 +39,7 @@ def upload_to_lake(file_path, dataset,storage_client):
         raise EnvironmentError(
             "GCS_BUCKET_NAME is not set. "
             "Run: export GCS_BUCKET_NAME='<your-bucket-name>'"
-       )
+        )
 
     bucket = storage_client.bucket(bucket_name)
 
@@ -49,8 +48,6 @@ def upload_to_lake(file_path, dataset,storage_client):
     blob.upload_from_filename(str(file_path))
 
     print("Upload successful!")
-
-
 
 
 def upload_all_raw_files(raw_files, service_account_path=None):
@@ -78,9 +75,7 @@ def upload_all_raw_files(raw_files, service_account_path=None):
         print(f"Uploading {dataset}...")
 
         upload_to_lake(
-            file_path=file_path,
-            dataset=dataset,
-            storage_client=storage_client
+            file_path=file_path, dataset=dataset, storage_client=storage_client
         )
 
 

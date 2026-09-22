@@ -23,10 +23,10 @@ enriched_transactions as (
         coalesce(r.refunded_amount, 0)
             as refunded_amount
 
-    from transactions t
+    from transactions as t
 
-    left join refunds r
-        using (transaction_id)
+    left join refunds as r
+        on t.transaction_id = r.transaction_id
 
 ),
 
@@ -66,7 +66,7 @@ daily as (
             sum(
                 case
                     when status = 'succeeded'
-                    then amount
+                        then amount
                     else 0
                 end
             ),
@@ -77,7 +77,7 @@ daily as (
             sum(
                 case
                     when status = 'requires_payment_method'
-                    then amount
+                        then amount
                     else 0
                 end
             ),
@@ -88,7 +88,7 @@ daily as (
             sum(
                 case
                     when status = 'requires_action'
-                    then amount
+                        then amount
                     else 0
                 end
             ),
@@ -99,7 +99,7 @@ daily as (
             sum(
                 case
                     when status = 'canceled'
-                    then amount
+                        then amount
                     else 0
                 end
             ),
@@ -110,7 +110,7 @@ daily as (
             sum(
                 case
                     when status = 'processing'
-                    then amount
+                        then amount
                     else 0
                 end
             ),

@@ -109,40 +109,40 @@ models:
       from 2025-01-01 to 2030-12-31.
 
     columns:
-      - name: Date
+      - name: calendar_date
         description: "Primary key. Calendar date."
         tests:
           - not_null
           - unique
 
-      - name: Year
+      - name: year
         description: "Calendar year."
 
-      - name: Week
+      - name: week_number
         description: "Week number of the year."
 
-      - name: Day
+      - name: day
         description: "Day of the month."
 
-      - name: Quarter
+      - name: quarter_number
         description: "Calendar quarter."
 
-      - name: Month
+      - name: month
         description: "Month number."
 
-      - name: Month_Name
+      - name: month_name
         description: "Full name of the calendar month."
 
-      - name: Day_Of_Week
+      - name: day_of_week
         description: "ISO day of week, where Monday is 1 and Sunday is 7."
 
-      - name: Day_Of_Week_Name
+      - name: day_of_week_name
         description: "Full name of the day of the week."
 
-      - name: Is_Weekday
+      - name: is_weekday
         description: "TRUE when the date is Monday through Friday."
 
-      - name: Days_In_Month
+      - name: days_in_month
         description: "Number of days in the month."
 
 
@@ -203,7 +203,7 @@ models:
           - relationships:
               arguments:
                 to: ref('dim_date')
-                field: Date
+                field: calendar_date
 
       - name: payment_method_id
         description: >
