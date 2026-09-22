@@ -22,8 +22,8 @@ jobs:
 
       - name: Lint SQL with sqlfluff
         working-directory: dbt_settlens
-        run: poetry --directory .. run sqlfluff lint models
+        run: poetry run sqlfluff lint models
 
       - name: dbt build
         working-directory: dbt_settlens
-        run: poetry --directory .. run dbt build
+        run: poetry run dbt build
