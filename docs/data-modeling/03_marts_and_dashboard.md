@@ -112,6 +112,17 @@ The mart layer is the consumption layer of Settlens. These models should answer 
 
 **Business question:** Which merchants are healthy, deteriorating or operationally risky?
 
+### 2.6 `dim_model` star schema
+
+Unlike the wide, question-specific marts above, `models/marts/dim_model/` publishes a conformed star schema for BI tools that prefer joining dimensions to a fact table:
+
+- `dim_customer` — one row per customer, with segment, risk level and an `is_active` flag.
+- `dim_merchant` — one row per merchant, with MCC, tier, risk category and a `processing_fee_band` derived from `processing_fee_pct`.
+- `dim_date` — a generated calendar spine (2025-01-01 through 2030-12-31) with year, week, quarter, month and weekday attributes.
+- `fact_transactions` — one row per transaction, keyed by `customer_id`, `merchant_id` and `payment_method_id`, sourced from `int_transactions_auth`.
+
+**Business question:** Same underlying data as the marts above, modelled for ad-hoc drill-down and self-service BI rather than a fixed dashboard page.
+
 ## 3. Recommended dashboard structure
 
 A single dashboard can be divided into four pages or sections.
