@@ -12,7 +12,7 @@ SELECT
     round(
         100 * sum(is_successful) / count(*), 2
     ) AS authorization_rate,
-    sum(amount_minor) AS total_payment_volume, --need to add exchange rate
+    sum(amount) AS total_payment_volume, --need to add exchange rate
     sum(CASE WHEN is_successful = 1 THEN amount_minor ELSE 0 END)
         AS successful_payment_volume
 FROM {{ ref('int_transactions_auth') }}
