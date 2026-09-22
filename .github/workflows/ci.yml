@@ -24,6 +24,9 @@ jobs:
         working-directory: dbt_settlens
         run: poetry run sqlfluff lint models
 
-      - name: dbt build
+      - name: Check Python formatting with black
+        run: poetry run black --check upload.py ingestion airflow/dags/settlens_batch_pipeline.py
+
+      - name: dbt compile
         working-directory: dbt_settlens
-        run: poetry run dbt build
+        run: poetry run dbt compile
