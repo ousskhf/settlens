@@ -6,21 +6,33 @@ GCS → BigQuery Raw → dbt → BigQuery Marts → Looker Studio
 
 ## GCP Project
 
-`le-wagon-data-2249-2`
+Set via `GCP_PROJECT_ID` in `.env` (see repo root `README.md`), same as the rest of the pipeline. No hardcoded project.
 
 ## BigQuery Dataset
 
-`settlens_dev`
+Set via `DBT_DATASET` in `.env`.
 
 ## Initial Dashboard Sources
 
 ### Merchant Health
 
-`le-wagon-data-2249-2.settlens_dev.mart_merchant_health`
+`{GCP_PROJECT_ID}.{DBT_DATASET}.mart_merchant_health`
 
 ### Payment Monetization
 
-`le-wagon-data-2249-2.settlens_dev.mart_payment_monetization_daily`
+`{GCP_PROJECT_ID}.{DBT_DATASET}.mart_payment_monetization_daily`
+
+### Card Authorization Rates
+
+`{GCP_PROJECT_ID}.{DBT_DATASET}.mart_card_auth_rates_daily`
+
+### Payment Failure Opportunity
+
+`{GCP_PROJECT_ID}.{DBT_DATASET}.mart_payment_failure_opportunity`
+
+### Customer Payment Health
+
+`{GCP_PROJECT_ID}.{DBT_DATASET}.mart_customer_payment_health`
 
 ## Dashboard Design
 
