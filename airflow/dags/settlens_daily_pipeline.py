@@ -22,7 +22,6 @@ with DAG(
     # 2025-09-01 -> 2026-08-31)
     schedule="@daily",
     start_date=datetime(2026, 9, 1),
-    end_date=datetime(2026, 9, 7),   # <-- temporary, remove after the test
     # catchup=True backfills every day from start_date up to today, one
     # DAG run per day, each with its own {{ ds }}. This is the backfill
     # mechanism - no separate backfill script needed. Flip to False once
