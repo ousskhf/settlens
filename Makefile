@@ -19,3 +19,16 @@ download-data:
 .PHONY: clean-data
 clean-data:
 	rm -rf $(DATA_DIR)
+
+PYTHON_PATHS := upload.py ingestion airflow/dags/settlens_batch_pipeline.py
+
+.PHONY: lint
+lint:
+	cd dbt_settlens && poetry run sqlfluff lint models
+	poetry run black --check $(PYTHON_PATHS)
+	cd dbt_settlens && poetry run dbt compile
+
+.PHONY: fix
+fix:
+	cd dbt_settlens && poetry run sqlfluff fix models
+	poetry run black $(PYTHON_PATHS)
