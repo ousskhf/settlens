@@ -24,6 +24,7 @@ MARTS (`mart_*`)
 Current staging models:
 
 - `stg_transactions`
+- `stg_customers`
 - `stg_merchants`
 - `stg_refunds`
 - `stg_disputes`
@@ -94,6 +95,8 @@ Current marts:
 - `mart_merchant_health`
 - `mart_payment_failure_opportunity`
 - `mart_payment_monetization_daily`
+
+Alongside the wide, question-specific marts above, `models/marts/dim_model/` holds a conformed star schema (`dim_customer`, `dim_merchant`, `dim_date`, `fact_transactions`) for BI tools that prefer joining dimensions to a fact table over querying pre-aggregated marts directly. See [`03_marts_and_dashboard.md`](03_marts_and_dashboard.md) for details.
 
 ### Why marts are tables
 
