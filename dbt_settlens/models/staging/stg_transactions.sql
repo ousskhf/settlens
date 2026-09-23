@@ -30,8 +30,8 @@ cleaned as (
         date(timestamp_micros(div(transaction_created_at, 1000)))
             as transaction_date,
         case
-        when currency = 'JPY' then cast(amount_minor as numeric)
-        else cast(amount_minor as numeric) / 100
+            when currency = 'JPY' then cast(amount_minor as numeric)
+            else cast(amount_minor as numeric) / 100
         end as amount,
 
         upper(trim(currency)) as currency,
