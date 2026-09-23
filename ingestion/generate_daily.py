@@ -52,16 +52,13 @@ SEED = 42
 BASELINE_DIR = Path("data/raw")
 OUTPUT_DIR = Path("data/daily")
 
-# Target steady-state volume once ramp-up is complete.
-AVG_DAILY_TRANSACTIONS = 7000
+# Target steady-state volume once merchant migration matures.
+AVG_DAILY_TRANSACTIONS = 1800
 
-# Baseline averaged ~274/day. Rather than jumping straight to 7000 (a 25x
-# cliff on any time-series chart), daily volume ramps up smoothly over
-# RAMP_DAYS from the baseline's average up to the new steady state -
-# reads as genuine platform growth, not a discontinuity, and needs no
-# changes to the baseline itself.
-RAMP_START_BASELINE_AVG = 274
-RAMP_DAYS = 30
+# Daily activity starts from the actual historical baseline average
+# and progressively increases as merchants migrate more payment volume
+# onto Settlens; this keeps dashboard growth visible without a 25x jump.
+RAMP_DAYS = 60
 
 # Payments are not flat across the week. Friday/Saturday run hot,
 # Sunday runs cold. Monday=0 ... Sunday=6
@@ -175,19 +172,24 @@ def seed_for_date(run_date: pd.Timestamp) -> int:
 
 
 def daily_volume(
-    rng: np.random.Generator, run_date: pd.Timestamp, ramp_start: pd.Timestamp
+    rng: np.random.Generator,
+    run_date: pd.Timestamp,
+    ramp_start: pd.Timestamp,
+    baseline_daily_avg: float,
 ) -> int:
     """
     Day-of-week seasonality, noise, and a ramp-up from the baseline's
-    average volume to the new steady-state volume over RAMP_DAYS.
+    actual average volume to the new steady-state volume over RAMP_DAYS.
     """
     days_in = (run_date.normalize() - ramp_start.normalize()).days
     if days_in < 0:
         days_in = 0
     ramp_progress = min(1.0, days_in / RAMP_DAYS)
+
+    # Use the observed baseline average so the growth curve follows the source data.
     target = (
-        RAMP_START_BASELINE_AVG
-        + (AVG_DAILY_TRANSACTIONS - RAMP_START_BASELINE_AVG) * ramp_progress
+        baseline_daily_avg
+        + (AVG_DAILY_TRANSACTIONS - baseline_daily_avg) * ramp_progress
     )
 
     multiplier = DOW_MULTIPLIER[run_date.dayofweek]
@@ -235,6 +237,15 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     payment_methods = pd.read_parquet(baseline_dir / "payment_methods.parquet")
     baseline_txns = pd.read_parquet(baseline_dir / "transactions.parquet")
 
+    # Derive the starting volume from the baseline instead of hard-coding ~274/day.
+    baseline_start = baseline_txns["transaction_created_at"].min().normalize()
+    baseline_end = baseline_txns["transaction_created_at"].max().normalize()
+    baseline_days = (baseline_end - baseline_start).days + 1
+    baseline_daily_avg = len(baseline_txns) / baseline_days
+
+    # Start the migration ramp on the first day after the historical baseline ends.
+    daily_start = baseline_end + pd.Timedelta(days=1)
+
     # Only transact with accounts that are actually open.
     active_customers = customers[customers["account_status"] == "active"].reset_index(
         drop=True
@@ -249,8 +260,9 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     ].reset_index(drop=True)
     pm_indices_by_customer = usable_pm.groupby("customer_id").indices
 
+    # Gradually scale from the historical average as merchants migrate more payment activity.
     n_txn = daily_volume(
-        rng, run_ts, ramp_start=baseline_txns["transaction_created_at"].max()
+        rng, run_ts, ramp_start=daily_start, baseline_daily_avg=baseline_daily_avg
     )
 
     # --- sample the participating entities ------------------------------
