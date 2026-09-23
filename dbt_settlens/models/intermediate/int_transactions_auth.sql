@@ -7,7 +7,7 @@ SELECT
     merchant_id,
     payment_method_id,
     transaction_created_at,
-    amount_minor,
+    amount,
     currency,
     payment_method_type,
 
