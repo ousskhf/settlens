@@ -75,7 +75,9 @@ def delete_existing_day(table, date_column, run_date, bq_client):
     """
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
-            bigquery.ScalarQueryParameter("run_date", "DATE", run_date.strftime("%Y-%m-%d")),
+            bigquery.ScalarQueryParameter(
+                "run_date", "DATE", run_date.strftime("%Y-%m-%d")
+            ),
         ]
     )
     print(f"  Clearing existing rows for {run_date:%Y-%m-%d} (predicate: {predicate})")
@@ -84,7 +86,9 @@ def delete_existing_day(table, date_column, run_date, bq_client):
     print(f"  Deleted {job.num_dml_affected_rows} existing row(s)")
 
 
-def load_daily_table_from_gcs(table_name, file_name, run_date, bucket_name, dataset_id, project_id, bq_client):
+def load_daily_table_from_gcs(
+    table_name, file_name, run_date, bucket_name, dataset_id, project_id, bq_client
+):
     blob_path = build_blob_path(table_name, file_name, today=run_date)
     uri = f"gs://{bucket_name}/{blob_path}"
     table_ref = f"{project_id}.{dataset_id}.{table_name}"
@@ -95,7 +99,9 @@ def load_daily_table_from_gcs(table_name, file_name, run_date, bucket_name, data
     try:
         table = bq_client.get_table(table_ref)
     except NotFound:
-        print(f"  {table_ref} does not exist yet - skipping delete, this is the first load")
+        print(
+            f"  {table_ref} does not exist yet - skipping delete, this is the first load"
+        )
     else:
         delete_existing_day(table, DAILY_DATE_COLUMNS[table_name], run_date, bq_client)
 
@@ -115,29 +121,47 @@ def load_daily_table_from_gcs(table_name, file_name, run_date, bucket_name, data
     print(f"  {table_ref} now has {table.num_rows} total rows")
 
 
-def load_all_daily_tables(run_date, daily_tables=DAILY_TABLES, service_account_path=None):
+def load_all_daily_tables(
+    run_date, daily_tables=DAILY_TABLES, service_account_path=None
+):
     project_id = os.getenv("GCP_PROJECT_ID")
     if not project_id:
-        raise EnvironmentError("GCP_PROJECT_ID is not set. Run: export GCP_PROJECT_ID='<your-project-id>'")
+        raise EnvironmentError(
+            "GCP_PROJECT_ID is not set. Run: export GCP_PROJECT_ID='<your-project-id>'"
+        )
 
     bucket_name = os.getenv("GCS_BUCKET_NAME")
     if not bucket_name:
-        raise EnvironmentError("GCS_BUCKET_NAME is not set. Run: export GCS_BUCKET_NAME='<your-bucket-name>'")
+        raise EnvironmentError(
+            "GCS_BUCKET_NAME is not set. Run: export GCS_BUCKET_NAME='<your-bucket-name>'"
+        )
 
     dataset_id = os.getenv("BQ_DATASET", "raw_settlens")
 
     if service_account_path:
-        bq_client = bigquery.Client.from_service_account_json(service_account_path, project=project_id)
+        bq_client = bigquery.Client.from_service_account_json(
+            service_account_path, project=project_id
+        )
     else:
         bq_client = bigquery.Client(project=project_id)
 
     for table_name, file_name in daily_tables.items():
         print(f"Loading {table_name} for {run_date:%Y-%m-%d}...")
-        load_daily_table_from_gcs(table_name, file_name, run_date, bucket_name, dataset_id, project_id, bq_client)
+        load_daily_table_from_gcs(
+            table_name,
+            file_name,
+            run_date,
+            bucket_name,
+            dataset_id,
+            project_id,
+            bq_client,
+        )
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Load one day of data from GCS into BigQuery (append, idempotent)")
+    parser = argparse.ArgumentParser(
+        description="Load one day of data from GCS into BigQuery (append, idempotent)"
+    )
     parser.add_argument("--run-date", required=True, help="YYYY-MM-DD")
     args = parser.parse_args()
 
