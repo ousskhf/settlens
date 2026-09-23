@@ -30,7 +30,9 @@ def upload_daily_file(table_name, gcs_file_name, run_date, storage_client, bucke
     matching that plain name is what load_daily_bigquery.py expects to
     find via build_blob_path().
     """
-    local_path = LOCAL_DAILY_DIR / table_name / f"{table_name}_{run_date:%Y-%m-%d}.parquet"
+    local_path = (
+        LOCAL_DAILY_DIR / table_name / f"{table_name}_{run_date:%Y-%m-%d}.parquet"
+    )
     if not local_path.is_file():
         raise FileNotFoundError(
             f"Expected daily file not found: {local_path}\n"
@@ -48,7 +50,9 @@ def upload_daily_file(table_name, gcs_file_name, run_date, storage_client, bucke
     print("Upload successful!")
 
 
-def upload_all_daily_files(run_date, daily_tables=DAILY_TABLES, service_account_path=None):
+def upload_all_daily_files(
+    run_date, daily_tables=DAILY_TABLES, service_account_path=None
+):
     bucket_name = os.getenv("GCS_BUCKET_NAME")
     if not bucket_name:
         raise EnvironmentError(
@@ -62,11 +66,15 @@ def upload_all_daily_files(run_date, daily_tables=DAILY_TABLES, service_account_
 
     for table_name, gcs_file_name in daily_tables.items():
         print(f"Uploading {table_name} for {run_date:%Y-%m-%d}...")
-        upload_daily_file(table_name, gcs_file_name, run_date, storage_client, bucket_name)
+        upload_daily_file(
+            table_name, gcs_file_name, run_date, storage_client, bucket_name
+        )
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Upload one day of generated data to GCS")
+    parser = argparse.ArgumentParser(
+        description="Upload one day of generated data to GCS"
+    )
     parser.add_argument("--run-date", required=True, help="YYYY-MM-DD")
     args = parser.parse_args()
 

@@ -67,8 +67,8 @@ RAMP_DAYS = 30
 # Sunday runs cold. Monday=0 ... Sunday=6
 DOW_MULTIPLIER = {0: 0.95, 1: 1.00, 2: 1.02, 3: 1.06, 4: 1.20, 5: 1.12, 6: 0.80}
 
-REFUND_DAILY_RATE = 0.07      # refunds created today, as a share of daily txn volume
-DISPUTE_DAILY_RATE = 0.008    # disputes created today, same basis
+REFUND_DAILY_RATE = 0.07  # refunds created today, as a share of daily txn volume
+DISPUTE_DAILY_RATE = 0.008  # disputes created today, same basis
 
 COUNTRIES = np.array(["FR", "DE", "GB", "US", "ES", "IT", "NL", "BE", "IN", "JP"])
 COUNTRY_WEIGHTS = np.array([0.26, 0.12, 0.11, 0.12, 0.08, 0.08, 0.06, 0.05, 0.07, 0.05])
@@ -99,25 +99,49 @@ CATEGORY_AMOUNT_SCALE = {
     "digital_services": 42,
 }
 
-FAILURE_CODES = np.array([
-    "card_declined",
-    "insufficient_funds",
-    "expired_card",
-    "incorrect_cvc",
-    "authentication_required",
-    "processing_error",
-    "do_not_honor",
-])
+FAILURE_CODES = np.array(
+    [
+        "card_declined",
+        "insufficient_funds",
+        "expired_card",
+        "incorrect_cvc",
+        "authentication_required",
+        "processing_error",
+        "do_not_honor",
+    ]
+)
 FAILURE_WEIGHTS = np.array([0.34, 0.24, 0.08, 0.07, 0.12, 0.08, 0.07])
 
 # Real payment traffic clusters in waking hours rather than spreading
 # evenly across 24h. Index = hour UTC.
-HOUR_WEIGHTS = np.array([
-    0.010, 0.007, 0.005, 0.004, 0.005, 0.009,   # 00-05
-    0.018, 0.032, 0.048, 0.058, 0.062, 0.065,   # 06-11
-    0.068, 0.066, 0.062, 0.060, 0.061, 0.066,   # 12-17
-    0.072, 0.070, 0.058, 0.044, 0.030, 0.020,   # 18-23
-])
+HOUR_WEIGHTS = np.array(
+    [
+        0.010,
+        0.007,
+        0.005,
+        0.004,
+        0.005,
+        0.009,  # 00-05
+        0.018,
+        0.032,
+        0.048,
+        0.058,
+        0.062,
+        0.065,  # 06-11
+        0.068,
+        0.066,
+        0.062,
+        0.060,
+        0.061,
+        0.066,  # 12-17
+        0.072,
+        0.070,
+        0.058,
+        0.044,
+        0.030,
+        0.020,  # 18-23
+    ]
+)
 HOUR_WEIGHTS = HOUR_WEIGHTS / HOUR_WEIGHTS.sum()
 
 API_VERSION = "synthetic-v1"
@@ -126,6 +150,7 @@ API_VERSION = "synthetic-v1"
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def daily_id(prefix: str, run_date: str, index: int) -> str:
     """
@@ -149,7 +174,9 @@ def seed_for_date(run_date: pd.Timestamp) -> int:
     return SEED + days_since_epoch
 
 
-def daily_volume(rng: np.random.Generator, run_date: pd.Timestamp, ramp_start: pd.Timestamp) -> int:
+def daily_volume(
+    rng: np.random.Generator, run_date: pd.Timestamp, ramp_start: pd.Timestamp
+) -> int:
     """
     Day-of-week seasonality, noise, and a ramp-up from the baseline's
     average volume to the new steady-state volume over RAMP_DAYS.
@@ -158,7 +185,10 @@ def daily_volume(rng: np.random.Generator, run_date: pd.Timestamp, ramp_start: p
     if days_in < 0:
         days_in = 0
     ramp_progress = min(1.0, days_in / RAMP_DAYS)
-    target = RAMP_START_BASELINE_AVG + (AVG_DAILY_TRANSACTIONS - RAMP_START_BASELINE_AVG) * ramp_progress
+    target = (
+        RAMP_START_BASELINE_AVG
+        + (AVG_DAILY_TRANSACTIONS - RAMP_START_BASELINE_AVG) * ramp_progress
+    )
 
     multiplier = DOW_MULTIPLIER[run_date.dayofweek]
     noise = rng.normal(1.0, 0.06)
@@ -181,14 +211,13 @@ def timestamps_within_day(
         + seconds.astype("int64") * 1_000_000
         + micros.astype("int64")
     )
-    return pd.to_datetime(
-        day_start.value + offsets * 1000, utc=True
-    ).sort_values()
+    return pd.to_datetime(day_start.value + offsets * 1000, utc=True).sort_values()
 
 
 # ---------------------------------------------------------------------------
 # Main generation
 # ---------------------------------------------------------------------------
+
 
 def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     """
@@ -207,8 +236,12 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     baseline_txns = pd.read_parquet(baseline_dir / "transactions.parquet")
 
     # Only transact with accounts that are actually open.
-    active_customers = customers[customers["account_status"] == "active"].reset_index(drop=True)
-    active_merchants = merchants[merchants["account_status"] == "active"].reset_index(drop=True)
+    active_customers = customers[customers["account_status"] == "active"].reset_index(
+        drop=True
+    )
+    active_merchants = merchants[merchants["account_status"] == "active"].reset_index(
+        drop=True
+    )
 
     # Only payment methods belonging to an active customer are selectable.
     usable_pm = payment_methods[
@@ -216,7 +249,9 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     ].reset_index(drop=True)
     pm_indices_by_customer = usable_pm.groupby("customer_id").indices
 
-    n_txn = daily_volume(rng, run_ts, ramp_start=baseline_txns["transaction_created_at"].max())
+    n_txn = daily_volume(
+        rng, run_ts, ramp_start=baseline_txns["transaction_created_at"].max()
+    )
 
     # --- sample the participating entities ------------------------------
     # Customers must have at least one usable payment method.
@@ -249,10 +284,15 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
     txn_timestamps = timestamps_within_day(rng, run_ts, n_txn)
 
     # --- amounts (same lognormal-by-category logic as baseline) ---------
-    amount_major = np.array([
-        max(0.50, min(float(rng.lognormal(np.log(CATEGORY_AMOUNT_SCALE[c]), 0.65)), 5000))
-        for c in txn_merchants["merchant_category"]
-    ])
+    amount_major = np.array(
+        [
+            max(
+                0.50,
+                min(float(rng.lognormal(np.log(CATEGORY_AMOUNT_SCALE[c]), 0.65)), 5000),
+            )
+            for c in txn_merchants["merchant_category"]
+        ]
+    )
     currency = txn_merchants["settlement_currency"].to_numpy()
     amount_minor = np.where(
         currency == "JPY", np.rint(amount_major), np.rint(amount_major * 100)
@@ -272,7 +312,8 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
             cardholder_present[i] = present
             authorization_method[i] = (
                 rng.choice(["chip", "contactless", "swipe"], p=[0.44, 0.49, 0.07])
-                if present else "online"
+                if present
+                else "online"
             )
         elif pm_type[i] == "wallet":
             present = rng.random() < 0.18
@@ -283,12 +324,15 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
 
     # --- risk + status: identical formula to baseline -------------------
     base_risk = rng.beta(1.7, 8.5, n_txn)
-    merchant_risk_add = txn_merchants["merchant_category"].isin(
-        ["gambling", "jewelry"]
-    ).to_numpy() * 0.12
+    merchant_risk_add = (
+        txn_merchants["merchant_category"].isin(["gambling", "jewelry"]).to_numpy()
+        * 0.12
+    )
     cross_border_add = is_cross_border.astype(float) * 0.08
     prepaid_add = (txn_pm["card_funding"].fillna("") == "prepaid").to_numpy() * 0.07
-    risk_score = np.clip(base_risk + merchant_risk_add + cross_border_add + prepaid_add, 0, 1)
+    risk_score = np.clip(
+        base_risk + merchant_risk_add + cross_border_add + prepaid_add, 0, 1
+    )
 
     fail_prob = np.clip(0.035 + risk_score * 0.13 + is_cross_border * 0.018, 0.02, 0.28)
     u = rng.random(n_txn)
@@ -315,36 +359,39 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
         rng.lognormal(np.log(620), 0.55, size=n_txn)
         + is_cross_border * 160
         + (status != "succeeded") * 120,
-        80, 8000,
+        80,
+        8000,
     ).astype(int)
 
-    transactions = pd.DataFrame({
-        "transaction_id": [daily_id("pi", run_date_str, i) for i in range(n_txn)],
-        "customer_id": txn_customer_ids,
-        "merchant_id": txn_merchant_ids,
-        "payment_method_id": txn_pm["payment_method_id"].to_numpy(),
-        "transaction_created_at": txn_timestamps,
-        "amount_minor": amount_minor,
-        "currency": currency,
-        "payment_method_type": pm_type,
-        "card_brand": txn_pm["card_brand"].to_numpy(),
-        "card_funding": txn_pm["card_funding"].to_numpy(),
-        "cardholder_present": cardholder_present,
-        "authorization_method": authorization_method,
-        "mcc": txn_merchants["mcc"].to_numpy(),
-        "merchant_country": merchant_country,
-        "issuer_country": issuer_country,
-        "is_cross_border": is_cross_border,
-        "capture_method": capture_method,
-        "status": status,
-        "failure_code": failure_code,
-        "risk_score": np.round(risk_score, 4),
-        "processing_time_ms": processing_time_ms,
-        "record_created_at": txn_timestamps,
-        "record_last_updated": txn_timestamps,
-        "data_version": 1,
-        "source_system": "synthetic",
-    })
+    transactions = pd.DataFrame(
+        {
+            "transaction_id": [daily_id("pi", run_date_str, i) for i in range(n_txn)],
+            "customer_id": txn_customer_ids,
+            "merchant_id": txn_merchant_ids,
+            "payment_method_id": txn_pm["payment_method_id"].to_numpy(),
+            "transaction_created_at": txn_timestamps,
+            "amount_minor": amount_minor,
+            "currency": currency,
+            "payment_method_type": pm_type,
+            "card_brand": txn_pm["card_brand"].to_numpy(),
+            "card_funding": txn_pm["card_funding"].to_numpy(),
+            "cardholder_present": cardholder_present,
+            "authorization_method": authorization_method,
+            "mcc": txn_merchants["mcc"].to_numpy(),
+            "merchant_country": merchant_country,
+            "issuer_country": issuer_country,
+            "is_cross_border": is_cross_border,
+            "capture_method": capture_method,
+            "status": status,
+            "failure_code": failure_code,
+            "risk_score": np.round(risk_score, 4),
+            "processing_time_ms": processing_time_ms,
+            "record_created_at": txn_timestamps,
+            "record_last_updated": txn_timestamps,
+            "data_version": 1,
+            "source_system": "synthetic",
+        }
+    )
 
     # --- refunds: today's refunds are for PAST payments -----------------
     past_succeeded = baseline_txns[baseline_txns["status"] == "succeeded"]
@@ -357,25 +404,41 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
         for i, txn in enumerate(picked.itertuples(index=False)):
             original = int(txn.amount_minor)
             full = rng.random() < 0.38
-            amount = original if full else int(max(1, round(original * rng.uniform(0.10, 0.75))))
+            amount = (
+                original
+                if full
+                else int(max(1, round(original * rng.uniform(0.10, 0.75))))
+            )
             created = txn_timestamps[rng.integers(0, n_txn)]
-            refund_rows.append({
-                "refund_id": daily_id("re", run_date_str, i),
-                "transaction_id": txn.transaction_id,
-                "refund_created_at": created,
-                "amount_minor": amount,
-                "currency": txn.currency,
-                "refund_reason": rng.choice(
-                    ["customer_request", "duplicate", "fraudulent", "product_issue", "service_issue"],
-                    p=[0.46, 0.12, 0.08, 0.18, 0.16],
-                ),
-                "refund_status": rng.choice(["succeeded", "pending", "failed"], p=[0.965, 0.020, 0.015]),
-                "initiated_by": rng.choice(["customer", "merchant", "support"], p=[0.42, 0.34, 0.24]),
-                "record_created_at": created,
-                "record_last_updated": created,
-                "data_version": 1,
-                "source_system": "synthetic",
-            })
+            refund_rows.append(
+                {
+                    "refund_id": daily_id("re", run_date_str, i),
+                    "transaction_id": txn.transaction_id,
+                    "refund_created_at": created,
+                    "amount_minor": amount,
+                    "currency": txn.currency,
+                    "refund_reason": rng.choice(
+                        [
+                            "customer_request",
+                            "duplicate",
+                            "fraudulent",
+                            "product_issue",
+                            "service_issue",
+                        ],
+                        p=[0.46, 0.12, 0.08, 0.18, 0.16],
+                    ),
+                    "refund_status": rng.choice(
+                        ["succeeded", "pending", "failed"], p=[0.965, 0.020, 0.015]
+                    ),
+                    "initiated_by": rng.choice(
+                        ["customer", "merchant", "support"], p=[0.42, 0.34, 0.24]
+                    ),
+                    "record_created_at": created,
+                    "record_last_updated": created,
+                    "data_version": 1,
+                    "source_system": "synthetic",
+                }
+            )
     refunds = pd.DataFrame(refund_rows)
 
     # --- disputes: also against PAST card payments ----------------------
@@ -392,112 +455,202 @@ def generate_daily(run_date: str, baseline_dir: Path = BASELINE_DIR) -> dict:
         for i, txn in enumerate(picked.itertuples(index=False)):
             created = txn_timestamps[rng.integers(0, n_txn)]
             dstatus = rng.choice(
-                ["needs_response", "under_review", "won", "lost"], p=[0.27, 0.23, 0.25, 0.25]
+                ["needs_response", "under_review", "won", "lost"],
+                p=[0.27, 0.23, 0.25, 0.25],
             )
-            closed = created + pd.Timedelta(days=int(rng.integers(5, 45))) if dstatus in {"won", "lost"} else None
-            dispute_rows.append({
-                "dispute_id": daily_id("dp", run_date_str, i),
-                "transaction_id": txn.transaction_id,
-                "dispute_created_at": created,
-                "amount_minor": int(txn.amount_minor),
-                "currency": txn.currency,
-                "dispute_reason": rng.choice(
-                    ["fraudulent", "duplicate", "product_not_received",
-                     "product_unacceptable", "unrecognized", "credit_not_processed"],
-                    p=[0.35, 0.08, 0.18, 0.13, 0.18, 0.08],
-                ),
-                "dispute_status": dstatus,
-                "evidence_due_at": created + pd.Timedelta(days=14),
-                "closed_at": closed,
-                "record_created_at": created,
-                "record_last_updated": closed if closed is not None else created,
-                "data_version": 1,
-                "source_system": "synthetic",
-            })
+            closed = (
+                created + pd.Timedelta(days=int(rng.integers(5, 45)))
+                if dstatus in {"won", "lost"}
+                else None
+            )
+            dispute_rows.append(
+                {
+                    "dispute_id": daily_id("dp", run_date_str, i),
+                    "transaction_id": txn.transaction_id,
+                    "dispute_created_at": created,
+                    "amount_minor": int(txn.amount_minor),
+                    "currency": txn.currency,
+                    "dispute_reason": rng.choice(
+                        [
+                            "fraudulent",
+                            "duplicate",
+                            "product_not_received",
+                            "product_unacceptable",
+                            "unrecognized",
+                            "credit_not_processed",
+                        ],
+                        p=[0.35, 0.08, 0.18, 0.13, 0.18, 0.08],
+                    ),
+                    "dispute_status": dstatus,
+                    "evidence_due_at": created + pd.Timedelta(days=14),
+                    "closed_at": closed,
+                    "record_created_at": created,
+                    "record_last_updated": closed if closed is not None else created,
+                    "data_version": 1,
+                    "source_system": "synthetic",
+                }
+            )
     disputes = pd.DataFrame(dispute_rows)
 
     # --- events: lifecycle for today's activity -------------------------
     event_rows = []
 
-    def add_event(event_type, object_type, object_id, created_at,
-                  transaction_id=None, customer_id=None, merchant_id=None, payload=None):
-        event_rows.append({
-            "event_id": daily_id("evt", run_date_str, len(event_rows)),
-            "event_type": event_type,
-            "object_type": object_type,
-            "object_id": object_id,
-            "transaction_id": transaction_id,
-            "customer_id": customer_id,
-            "merchant_id": merchant_id,
-            "event_created_at": created_at,
-            "api_version": API_VERSION,
-            "livemode": False,
-            "source_system": "synthetic",
-            "payload_json": json_dumps(payload or {}),
-            "record_created_at": created_at,
-        })
+    def add_event(
+        event_type,
+        object_type,
+        object_id,
+        created_at,
+        transaction_id=None,
+        customer_id=None,
+        merchant_id=None,
+        payload=None,
+    ):
+        event_rows.append(
+            {
+                "event_id": daily_id("evt", run_date_str, len(event_rows)),
+                "event_type": event_type,
+                "object_type": object_type,
+                "object_id": object_id,
+                "transaction_id": transaction_id,
+                "customer_id": customer_id,
+                "merchant_id": merchant_id,
+                "event_created_at": created_at,
+                "api_version": API_VERSION,
+                "livemode": False,
+                "source_system": "synthetic",
+                "payload_json": json_dumps(payload or {}),
+                "record_created_at": created_at,
+            }
+        )
 
     for txn in transactions.itertuples(index=False):
         base = txn.transaction_created_at
         add_event(
-            "payment_intent.created", "payment_intent", txn.transaction_id, base,
-            transaction_id=txn.transaction_id, customer_id=txn.customer_id,
+            "payment_intent.created",
+            "payment_intent",
+            txn.transaction_id,
+            base,
+            transaction_id=txn.transaction_id,
+            customer_id=txn.customer_id,
             merchant_id=txn.merchant_id,
-            payload={"amount_minor": int(txn.amount_minor), "currency": txn.currency,
-                     "status": "requires_confirmation"},
+            payload={
+                "amount_minor": int(txn.amount_minor),
+                "currency": txn.currency,
+                "status": "requires_confirmation",
+            },
         )
         ptime = pd.Timedelta(milliseconds=int(txn.processing_time_ms))
         if txn.status == "succeeded":
-            add_event("payment_intent.processing", "payment_intent", txn.transaction_id,
-                      base + ptime * 0.55, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": "processing"})
-            add_event("payment_intent.succeeded", "payment_intent", txn.transaction_id,
-                      base + ptime, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": "succeeded"})
+            add_event(
+                "payment_intent.processing",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime * 0.55,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": "processing"},
+            )
+            add_event(
+                "payment_intent.succeeded",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": "succeeded"},
+            )
         elif txn.status == "requires_payment_method":
-            add_event("payment_intent.payment_failed", "payment_intent", txn.transaction_id,
-                      base + ptime, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": txn.status, "failure_code": txn.failure_code})
+            add_event(
+                "payment_intent.payment_failed",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": txn.status, "failure_code": txn.failure_code},
+            )
         elif txn.status == "canceled":
-            add_event("payment_intent.canceled", "payment_intent", txn.transaction_id,
-                      base + ptime, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": "canceled"})
+            add_event(
+                "payment_intent.canceled",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": "canceled"},
+            )
         elif txn.status == "requires_action":
-            add_event("payment_intent.requires_action", "payment_intent", txn.transaction_id,
-                      base + ptime, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": "requires_action"})
+            add_event(
+                "payment_intent.requires_action",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": "requires_action"},
+            )
         else:
-            add_event("payment_intent.processing", "payment_intent", txn.transaction_id,
-                      base + ptime, transaction_id=txn.transaction_id,
-                      customer_id=txn.customer_id, merchant_id=txn.merchant_id,
-                      payload={"status": "processing"})
+            add_event(
+                "payment_intent.processing",
+                "payment_intent",
+                txn.transaction_id,
+                base + ptime,
+                transaction_id=txn.transaction_id,
+                customer_id=txn.customer_id,
+                merchant_id=txn.merchant_id,
+                payload={"status": "processing"},
+            )
 
-    txn_lookup = baseline_txns.set_index("transaction_id")[["customer_id", "merchant_id"]]
+    txn_lookup = baseline_txns.set_index("transaction_id")[
+        ["customer_id", "merchant_id"]
+    ]
 
     for refund in refunds.itertuples(index=False):
         ids = txn_lookup.loc[refund.transaction_id]
-        add_event("refund.created", "refund", refund.refund_id, refund.refund_created_at,
-                  transaction_id=refund.transaction_id, customer_id=ids["customer_id"],
-                  merchant_id=ids["merchant_id"],
-                  payload={"amount_minor": int(refund.amount_minor), "currency": refund.currency,
-                           "status": refund.refund_status, "reason": refund.refund_reason})
+        add_event(
+            "refund.created",
+            "refund",
+            refund.refund_id,
+            refund.refund_created_at,
+            transaction_id=refund.transaction_id,
+            customer_id=ids["customer_id"],
+            merchant_id=ids["merchant_id"],
+            payload={
+                "amount_minor": int(refund.amount_minor),
+                "currency": refund.currency,
+                "status": refund.refund_status,
+                "reason": refund.refund_reason,
+            },
+        )
 
     for dispute in disputes.itertuples(index=False):
         ids = txn_lookup.loc[dispute.transaction_id]
-        add_event("charge.dispute.created", "dispute", dispute.dispute_id, dispute.dispute_created_at,
-                  transaction_id=dispute.transaction_id, customer_id=ids["customer_id"],
-                  merchant_id=ids["merchant_id"],
-                  payload={"amount_minor": int(dispute.amount_minor), "currency": dispute.currency,
-                           "status": dispute.dispute_status, "reason": dispute.dispute_reason})
+        add_event(
+            "charge.dispute.created",
+            "dispute",
+            dispute.dispute_id,
+            dispute.dispute_created_at,
+            transaction_id=dispute.transaction_id,
+            customer_id=ids["customer_id"],
+            merchant_id=ids["merchant_id"],
+            payload={
+                "amount_minor": int(dispute.amount_minor),
+                "currency": dispute.currency,
+                "status": dispute.dispute_status,
+                "reason": dispute.dispute_reason,
+            },
+        )
 
-    events = pd.DataFrame(event_rows).sort_values(
-        ["event_created_at", "event_id"]
-    ).reset_index(drop=True)
+    events = (
+        pd.DataFrame(event_rows)
+        .sort_values(["event_created_at", "event_id"])
+        .reset_index(drop=True)
+    )
 
     return {
         "transactions": transactions,
@@ -524,16 +677,19 @@ def write_daily(tables: dict, run_date: str, output_dir: Path = OUTPUT_DIR) -> d
         table_dir.mkdir(parents=True, exist_ok=True)
         path = table_dir / f"{name}_{run_date}.parquet"
         df.to_parquet(
-            path, index=False,
-            #Add below if we want to avoid nanosecond issue
-            #coerce_timestamps="us", allow_truncated_timestamps=True,
+            path,
+            index=False,
+            # Add below if we want to avoid nanosecond issue
+            # coerce_timestamps="us", allow_truncated_timestamps=True,
         )
         written[name] = path
     return written
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate one day of synthetic payment data")
+    parser = argparse.ArgumentParser(
+        description="Generate one day of synthetic payment data"
+    )
     parser.add_argument(
         "--run-date",
         default=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d"),
