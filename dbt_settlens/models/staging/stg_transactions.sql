@@ -29,7 +29,10 @@ cleaned as (
             as transaction_created_at,
         date(timestamp_micros(div(transaction_created_at, 1000)))
             as transaction_date,
-        safe_divide(cast(amount_minor as numeric), 100) as amount,
+        case
+            when currency = 'JPY' then cast(amount_minor as numeric)
+            else cast(amount_minor as numeric) / 100
+        end as amount,
 
         upper(trim(currency)) as currency,
         lower(trim(payment_method_type)) as payment_method_type,

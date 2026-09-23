@@ -214,8 +214,8 @@ models:
       # Transaction measures
       # -------------------------
 
-      - name: amount_minor
-        description: "Transaction amount in the currency's minor unit (e.g. cents for USD)."
+      - name: amount
+        description: "Transaction amount in major currency units (e.g. dollars for USD)."
 
       - name: processing_time_ms
         description: "Transaction processing time in milliseconds."
