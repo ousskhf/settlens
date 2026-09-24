@@ -33,10 +33,10 @@ cleaned as (
             )
         ) as refund_date,
 
-        safe_divide(
-            cast(amount_minor as numeric),
-            100
-        ) as refund_amount,
+        case
+            when currency = 'JPY' then cast(amount_minor as numeric)
+            else safe_divide(cast(amount_minor as numeric), 100)
+        end as refund_amount,
 
         timestamp_micros(
             div(record_created_at, 1000)
