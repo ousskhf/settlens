@@ -52,6 +52,11 @@ models:
 
       - name: amount_minor
         description: Transaction amount in the currency's minor unit, as received.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+             arguments:
+              min_value: 0
+
 
       - name: amount
         description: Transaction amount in major currency units (amount_minor / 100).
@@ -65,6 +70,9 @@ models:
           without an explicit currency-conversion step.
         data_tests:
           - not_null
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+             arguments:
+              value: 3
 
       - name: status
         description: Payment lifecycle status.
@@ -102,10 +110,19 @@ models:
       - name: risk_score
         description: >
           Risk score associated with the transaction.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
 
       - name: processing_time_ms
         description: >
           Transaction processing duration in milliseconds.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
 
       - name: record_created_at
         description: >
@@ -176,6 +193,9 @@ models:
           raw amount_minor.
         data_tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+             arguments:
+              min_value: 0
 
       - name: currency
         description: >
