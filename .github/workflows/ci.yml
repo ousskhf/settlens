@@ -20,6 +20,10 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
+      - name: Install dbt packages
+        working-directory: dbt_settlens
+        run: poetry run dbt deps
+
       - name: Lint SQL with sqlfluff
         working-directory: dbt_settlens
         run: poetry run sqlfluff lint models
